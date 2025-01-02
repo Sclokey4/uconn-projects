@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sara Clokey">
+<meta name="dcterms.date" content="2024-11-18">
+
+<title>Predicting Pitch Outcomes for Major League Pitchers in 2024</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="final-presentation_files/libs/clipboard/clipboard.min.js"></script>
+<script src="final-presentation_files/libs/quarto-html/quarto.js"></script>
+<script src="final-presentation_files/libs/quarto-html/popper.min.js"></script>
+<script src="final-presentation_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="final-presentation_files/libs/quarto-html/anchor.min.js"></script>
+<link href="final-presentation_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="final-presentation_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="final-presentation_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="final-presentation_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="final-presentation_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="final-presentation.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Predicting Pitch Outcomes for Major League Pitchers in 2024</h1>
+<p class="subtitle lead">Introduction to Data Science | Fall 2024</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sara Clokey </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 18, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="quick-survey" class="level2">
+<h2 class="anchored" data-anchor-id="quick-survey">Quick Survey!</h2>
+</section>
+<section id="data-science-in-baseball" class="level2">
+<h2 class="anchored" data-anchor-id="data-science-in-baseball">Data Science in Baseball</h2>
+<ul>
+<li>Relatively new phenomenon - last 20 years</li>
+<li>Sabermetrics: “the search for objective knowledge about baseball” (<span class="citation" data-cites="costa2019sabr">Costa, Huber, and Saccoman (<a href="#ref-costa2019sabr" role="doc-biblioref">2019</a>)</span>)</li>
+<li>First wave: developing new statistics (<span class="citation" data-cites="tango2007book">Tango, Lichtman, and Dolphin (<a href="#ref-tango2007book" role="doc-biblioref">2007</a>)</span>)</li>
+<li>Second wave: advanced tracking technology (<span class="citation" data-cites="healey2017moneyball">Healey (<a href="#ref-healey2017moneyball" role="doc-biblioref">2017</a>)</span>)</li>
+<li>Third (current) wave: using models for predicting player performance</li>
+</ul>
+</section>
+<section id="research-question-at-hand" class="level2">
+<h2 class="anchored" data-anchor-id="research-question-at-hand">Research Question at Hand</h2>
+<ul>
+<li>How can we predict pitch outcomes using sabermetric variables?</li>
+<li>How can we assess relative pitcher performance?</li>
+</ul>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<ul>
+<li>Pitch level data from Major League Baseball for the first half of the 2024 season (<span class="citation" data-cites="csas2024challenge"><span>“CSAS 2025: Data Challenge”</span> (<a href="#ref-csas2024challenge" role="doc-biblioref">2024</a>)</span>)</li>
+<li>After processing:
+<ul>
+<li>Over 343,000 data points</li>
+<li>68 variables</li>
+</ul></li>
+<li>Potential limitation</li>
+</ul>
+</section>
+<section id="baseball-basics" class="level2">
+<h2 class="anchored" data-anchor-id="baseball-basics">Baseball Basics</h2>
+<div style="text-align: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="field.png" width="500" height="400" class="figure-img"></p>
+<figcaption>Baseball Field Positioning</figcaption>
+</figure>
+</div>
+</div>
+</section>
+<section id="defining-pitch-outcomes" class="level2">
+<h2 class="anchored" data-anchor-id="defining-pitch-outcomes">Defining Pitch Outcomes</h2>
+<ul>
+<li>The result of every pitch
+<ul>
+<li>If batter hits the ball:
+<ul>
+<li>fielded out (ball is caught or thrown to a base)</li>
+<li>hit</li>
+</ul></li>
+<li>If batter does not hit the ball:
+<ul>
+<li>ball (called by umpire outside of the strike zone)</li>
+<li>strike (called by umpire inside the strike zone or batter swings and misses)</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="pitch-zone-visualization" class="level2">
+<h2 class="anchored" data-anchor-id="pitch-zone-visualization">Pitch Zone Visualization</h2>
+<div id="57929bd8" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">3</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">3</span>, <span class="dv">4</span>), </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                        gridspec_kw<span class="op">=</span>{<span class="st">'wspace'</span>: <span class="dv">0</span>, <span class="st">'hspace'</span>: <span class="dv">0</span>})</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"Strike Zone From the Catcher's Perspective"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">0</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'1'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">1</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'2'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">2</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'3'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">0</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'4'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">1</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'5'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">2</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'6'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">0</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'7'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">1</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'8'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">2</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'9'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axs.flat:</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    ax.set_xticks([])</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    ax.set_yticks([])</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axs.flat:</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _, spine <span class="kw">in</span> ax.spines.items():</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        spine.set_visible(<span class="va">True</span>)  </span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        spine.set_linewidth(<span class="dv">1</span>)   </span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        spine.set_edgecolor(<span class="st">'black'</span>) </span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>plt.tight_layout(pad<span class="op">=</span><span class="dv">0</span>)  </span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>plt.subplots_adjust(top<span class="op">=</span><span class="fl">0.9</span>)  </span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="final-presentation_files/figure-html/cell-2-output-1.png" class="quarto-figure quarto-figure-center figure-img" width="480" height="396"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="pitch-zone-usage-in-mlb-data" class="level2">
+<h2 class="anchored" data-anchor-id="pitch-zone-usage-in-mlb-data">Pitch Zone Usage in MLB Data</h2>
+<div id="d90d2c74" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow <span class="im">as</span> pa</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> (</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'data/statcast_pitch_swing_data_20240402_20240630.arrow'</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> pa.ipc.open_file(file_path).read_all()</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> table.to_pandas()</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>df.rename(columns<span class="op">=</span>{<span class="st">'type'</span>: <span class="st">'category'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>missing_percentage <span class="op">=</span> df.isnull().mean() <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>high_missing_columns <span class="op">=</span> missing_percentage[missing_percentage <span class="op">&gt;=</span> <span class="dv">65</span>].index</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(high_missing_columns, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop([<span class="st">'bat_speed'</span>, <span class="st">'swing_length'</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>are_fielder2_equal <span class="op">=</span> (df[<span class="st">'fielder_2'</span>] <span class="op">==</span> df[<span class="st">'fielder_2_1'</span>]).<span class="bu">all</span>()</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop([<span class="st">'game_year'</span>, <span class="st">'fielder_2_1'</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>out_of_range <span class="op">=</span> df[(df[<span class="st">'release_speed'</span>] <span class="op">&lt;</span> <span class="dv">60</span>) <span class="op">|</span> (df[<span class="st">'release_speed'</span>] <span class="op">&gt;</span> <span class="dv">105</span>)]</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>unique_out_of_range <span class="op">=</span> out_of_range[<span class="st">'release_speed'</span>].unique()</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>df.drop(</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    df[(df[<span class="st">'release_speed'</span>] <span class="op">&lt;</span> <span class="dv">60</span>) <span class="op">|</span> (df[<span class="st">'release_speed'</span>] <span class="op">&gt;</span> <span class="dv">105</span>)].index, </span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    inplace<span class="op">=</span><span class="va">True</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>unique_home_teams <span class="op">=</span> df[<span class="st">'home_team'</span>].unique()</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>unique_away_teams <span class="op">=</span> df[<span class="st">'away_team'</span>].unique()</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>clean_df <span class="op">=</span> df.dropna()</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> assign_x_coord(row):</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">7</span>]:</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">8</span>]:</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">2</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">9</span>]:</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">3</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> assign_y_coord(row):</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]:</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">3</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]:</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">2</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>]:</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>clean_df_zones <span class="op">=</span> clean_df.copy().loc[df.zone <span class="op">&lt;=</span> <span class="dv">9</span>]</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>clean_df_zones[<span class="st">'zone_x'</span>] <span class="op">=</span> clean_df_zones.<span class="bu">apply</span>(assign_x_coord, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>clean_df_zones[<span class="st">'zone_y'</span>] <span class="op">=</span> clean_df_zones.<span class="bu">apply</span>(assign_y_coord, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>clean_df_lefties <span class="op">=</span> clean_df_zones[clean_df_zones[<span class="st">'p_throws'</span>] <span class="op">==</span> <span class="st">'L'</span>]</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>clean_df_righties <span class="op">=</span> clean_df_zones[clean_df_zones[<span class="st">'p_throws'</span>] <span class="op">==</span> <span class="st">'R'</span>]</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>) </span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>plt.hist2d(</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>    clean_df_lefties.zone_x, clean_df_lefties.zone_y, bins<span class="op">=</span><span class="dv">3</span>, cmap<span class="op">=</span><span class="st">'Blues'</span>,</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">7500</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Heat Map per Zone (Lefties)'</span>)</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>plt.gca().get_xaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>plt.gca().get_yaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>cb_left <span class="op">=</span> plt.colorbar()</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>cb_left.set_label(<span class="st">'Counts in Bin'</span>)</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>) </span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>plt.hist2d(</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>    clean_df_righties.zone_x, clean_df_righties.zone_y, bins<span class="op">=</span><span class="dv">3</span>, cmap<span class="op">=</span><span class="st">'Greens'</span>, </span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>    vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">18000</span></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Heat Map per Zone (Righties)'</span>)</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>plt.gca().get_xaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>plt.gca().get_yaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>cb_right <span class="op">=</span> plt.colorbar()</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>cb_right.set_label(<span class="st">'Counts in Bin'</span>)</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="final-presentation_files/figure-html/cell-3-output-1.png" class="quarto-figure quarto-figure-center figure-img" width="1128" height="566"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="pitch-groups" class="level2">
+<h2 class="anchored" data-anchor-id="pitch-groups">Pitch Groups</h2>
+<ul>
+<li>Create groups based on the goal of a pitch</li>
+<li>Fastballs: focus on velocity</li>
+<li>Breaking balls: focus on horizontal and vertical movement</li>
+<li>Offspeed: focus on disrupting batter’s timing</li>
+<li>Knuckleball: focus on a lack of spin</li>
+</ul>
+</section>
+<section id="velocity" class="level2">
+<h2 class="anchored" data-anchor-id="velocity">Velocity</h2>
+<ul>
+<li>The maximum speed of a given pitch at any point from its release to the time it crosses home plate</li>
+<li>Measured in miles per hour (MPH)</li>
+<li>Focus of fastball group</li>
+</ul>
+</section>
+<section id="velocity-in-mlb-data" class="level2">
+<h2 class="anchored" data-anchor-id="velocity-in-mlb-data">Velocity in MLB Data</h2>
+<div id="c22eb77e" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>bad_events <span class="op">=</span> [<span class="st">'single'</span>, <span class="st">'walk'</span>, <span class="st">'home_run'</span>, <span class="st">'double'</span>, <span class="st">'field_error'</span>, </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">'hit_by_pitch'</span>, <span class="st">'catcher_interf'</span>, <span class="st">'triple'</span>, <span class="st">'sac_fly'</span>, </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">'sac_bunt'</span>, <span class="st">'stolen_base_2b'</span>]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>good_events <span class="op">=</span> [<span class="st">'strikeout'</span>, <span class="st">'field_out'</span>, <span class="st">'force_out'</span>, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>               <span class="st">'grounded_into_double_play'</span>, <span class="st">'double_play'</span>, <span class="st">'fielders_choice'</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>               <span class="st">'caught_stealing_home'</span>, <span class="st">'fielders_choice_out'</span>, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>               <span class="st">'caught_stealing_2b'</span>, <span class="st">'strikeout_double_play'</span>, </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>               <span class="st">'caught_stealing_3b'</span>, <span class="st">'other_out'</span>, </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>               <span class="st">'pickoff_caught_stealing_home'</span>, <span class="st">'pickoff_caught_stealing_3b'</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>               <span class="st">'pickoff_3b'</span>, <span class="st">'sac_fly_double_play'</span>, <span class="st">'pickoff_1b'</span>, <span class="st">'triple_play'</span>]</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> classify_pitch_outcome(row):</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row[<span class="st">'events'</span>] <span class="kw">in</span> bad_events <span class="kw">or</span> row[<span class="st">'category'</span>] <span class="op">==</span> <span class="st">'B'</span>:</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">'0'</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> row[<span class="st">'events'</span>] <span class="kw">in</span> good_events <span class="kw">or</span> row[<span class="st">'category'</span>] <span class="op">==</span> <span class="st">'S'</span>:</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">'1'</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">'None'</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'pitch_outcome'</span>] <span class="op">=</span> clean_df.<span class="bu">apply</span>(classify_pitch_outcome, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>clean_df <span class="op">=</span> clean_df.drop(</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    clean_df[clean_df[<span class="st">'pitch_type'</span>].isin([<span class="st">'PO'</span>, <span class="st">'EP'</span>, <span class="st">'FA'</span>, <span class="st">'CS'</span>])].index</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>outcome_counts <span class="op">=</span> clean_df[<span class="st">'pitch_outcome'</span>].value_counts()</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>pitch_group_mapping <span class="op">=</span> {</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">'FC'</span>: <span class="st">'fastball'</span>, <span class="st">'FF'</span>: <span class="st">'fastball'</span>, <span class="st">'FS'</span>: <span class="st">'fastball'</span>, <span class="st">'SI'</span>: <span class="st">'fastball'</span>,</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">'FO'</span>: <span class="st">'fastball'</span>, <span class="st">'SL'</span>: <span class="st">'breaking'</span>, <span class="st">'ST'</span>: <span class="st">'breaking'</span>, <span class="st">'CU'</span>: <span class="st">'breaking'</span>,</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SC'</span>: <span class="st">'breaking'</span>, <span class="st">'KC'</span>: <span class="st">'breaking'</span>, <span class="st">'SV'</span>: <span class="st">'breaking'</span>, <span class="st">'CH'</span>: <span class="st">'offspeed'</span>,</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">'KN'</span>: <span class="st">'knuckle'</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'pitch_group'</span>] <span class="op">=</span> clean_df[<span class="st">'pitch_type'</span>].<span class="bu">apply</span>(</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> x: pitch_group_mapping.get(x, <span class="st">'unknown'</span>)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>clean_filtered_df <span class="op">=</span> clean_df[clean_df[<span class="st">'pitch_group'</span>] <span class="op">!=</span> <span class="st">'unknown'</span>]</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> [<span class="st">'#ADD8E6'</span>, <span class="st">'#0096FF'</span>, <span class="st">'#5D3FD3'</span>, <span class="st">'#6495ED'</span>]</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>violin_plot <span class="op">=</span> (</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    ggplot(clean_filtered_df, </span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>           aes(x<span class="op">=</span><span class="st">'pitch_group'</span>, y<span class="op">=</span><span class="st">'release_speed'</span>, fill<span class="op">=</span><span class="st">'pitch_group'</span>))</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_violin(show_legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_fill_manual(values<span class="op">=</span>colors)</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(title<span class="op">=</span><span class="st">'Pitch Group vs Velocity'</span>, x<span class="op">=</span><span class="st">'Pitch Group'</span>, y<span class="op">=</span><span class="st">'Velocity (mph)'</span>)</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_bw()</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>violin_plot.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\18607\AppData\Local\Temp\ipykernel_13680\2694131178.py:20: SettingWithCopyWarning:
+
+
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="final-presentation_files/figure-html/cell-4-output-2.png" class="quarto-figure quarto-figure-center figure-img" width="640" height="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="break" class="level2">
+<h2 class="anchored" data-anchor-id="break">Break</h2>
+<ul>
+<li>Horizontal break: distance, in inches, of lateral movement that a pitcher imparts on a ball (<span class="citation" data-cites="maschino2023metrics">Maschino (<a href="#ref-maschino2023metrics" role="doc-biblioref">2023</a>)</span>)</li>
+<li>Induced vertical break: distance, in inches, of vertical movement that a pitcher imparts on a ball (<span class="citation" data-cites="maschino2023metrics">Maschino (<a href="#ref-maschino2023metrics" role="doc-biblioref">2023</a>)</span>)
+<ul>
+<li>considered in a vaccuum due to gravity</li>
+</ul></li>
+<li>Focus of breaking balls pitch group</li>
+</ul>
+</section>
+<section id="break-in-mlb-data" class="level2">
+<h2 class="anchored" data-anchor-id="break-in-mlb-data">Break in MLB Data</h2>
+<div id="378e8de3" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'pfx_x'</span>] <span class="op">=</span> clean_df[<span class="st">'pfx_x'</span>] <span class="op">*</span> <span class="dv">12</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'pfx_z'</span>] <span class="op">=</span> clean_df[<span class="st">'pfx_z'</span>] <span class="op">*</span> <span class="dv">12</span>  </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>(ggplot(clean_df, aes(x<span class="op">=</span><span class="st">'pfx_x'</span>, y<span class="op">=</span><span class="st">'pfx_z'</span>, color<span class="op">=</span><span class="st">'pitch_group'</span>)) <span class="op">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    geom_point() <span class="op">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    labs(title<span class="op">=</span><span class="st">'Vertical and Horizontal Break of Pitches'</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>         x<span class="op">=</span><span class="st">'Horizontal Break (inches)'</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>         y<span class="op">=</span><span class="st">'Vertical Break (inches)'</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>         color<span class="op">=</span><span class="st">'Pitch Group'</span>) <span class="op">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    coord_fixed(ratio<span class="op">=</span><span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    theme(figure_size<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>), legend_position<span class="op">=</span><span class="st">'bottom'</span>) <span class="op">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    facet_wrap(<span class="st">'~p_throws'</span>)  </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="final-presentation_files/figure-html/cell-5-output-1.png" class="quarto-figure quarto-figure-center figure-img" width="700" height="500"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="spin-rate" class="level2">
+<h2 class="anchored" data-anchor-id="spin-rate">Spin Rate</h2>
+<ul>
+<li>Rate of spin on a baseball after it is released in revolutions per minute (RPM)
+<ul>
+<li>RPM changes pitch trajectory; same pitch with same velocity will end up in a different place depending on how much it spins (<span class="citation" data-cites="mlb2024spinrate"><span>“Spin Rate (SR)”</span> (<a href="#ref-mlb2024spinrate" role="doc-biblioref">2024</a>)</span>)</li>
+</ul></li>
+<li>Focus of knuckleball pitch group
+<ul>
+<li>Aim for lowest possible RPM</li>
+</ul></li>
+</ul>
+</section>
+<section id="spin-rate-in-mlb-data" class="level2">
+<h2 class="anchored" data-anchor-id="spin-rate-in-mlb-data">Spin Rate in MLB Data</h2>
+<div id="95605539" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>avg_spin_rate_by_pitch_group <span class="op">=</span> clean_filtered_df.groupby(<span class="st">'pitch_group'</span>)[</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'release_spin_rate'</span>].mean().reset_index()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>(ggplot(avg_spin_rate_by_pitch_group, </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        aes(x<span class="op">=</span><span class="st">'pitch_group'</span>, y<span class="op">=</span><span class="st">'release_spin_rate'</span>, fill<span class="op">=</span><span class="st">'pitch_group'</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a> <span class="op">+</span> geom_bar(stat<span class="op">=</span><span class="st">'identity'</span>, show_legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a> <span class="op">+</span> labs(</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>     title<span class="op">=</span><span class="st">'Average Release Spin Rate by Pitch Group'</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>     x<span class="op">=</span><span class="st">'Pitch Group'</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>     y<span class="op">=</span><span class="st">'Average Release Spin Rate (RPM)'</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>   )</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a> <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>), legend_position<span class="op">=</span><span class="st">'bottom'</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="final-presentation_files/figure-html/cell-6-output-1.png" class="quarto-figure quarto-figure-center figure-img" width="700" height="500"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="revisiting-pitch-outcome-definition" class="level2">
+<h2 class="anchored" data-anchor-id="revisiting-pitch-outcome-definition">Revisiting Pitch Outcome Definition</h2>
+<ul>
+<li>After analyzing some aspects of pitch performance, let’s see if they affect pitch outcome</li>
+<li>Considered from pitcher’s perspective
+<ul>
+<li>positive events sorted as 1s</li>
+<li>negative events sorted as 0s</li>
+</ul></li>
+<li>Result is a binary variable to be predicted through model building</li>
+<li>Potential limitation</li>
+</ul>
+</section>
+<section id="prediction-model" class="level2">
+<h2 class="anchored" data-anchor-id="prediction-model">Prediction Model</h2>
+<ul>
+<li>Using LASSO logistic regression (<span class="citation" data-cites="tibshirani1996regression">Tibshirani (<a href="#ref-tibshirani1996regression" role="doc-biblioref">1996</a>)</span>)
+<ul>
+<li>Binary variable</li>
+<li>Variable reduction, overfitting prevention, interpretable</li>
+</ul></li>
+<li>Determine if existing variables can predict whether pitch outcome is positive or negative from the pitcher’s perspective</li>
+</ul>
+</section>
+<section id="model-results" class="level2">
+<h2 class="anchored" data-anchor-id="model-results">Model Results</h2>
+<ul>
+<li>LASSO logistic model validation with best parameters:</li>
+</ul>
+<div id="1deafb94" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>categorical_col <span class="op">=</span> [</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'pitch_type'</span>,  </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'stand'</span>, </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'p_throws'</span>, </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'home_team'</span>, </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'away_team'</span>, </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'bb_type'</span>, </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'inning_topbot'</span>, </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'if_fielding_alignment'</span>, </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'of_fielding_alignment'</span>, </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'pitch_group'</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>numerical_col <span class="op">=</span> [</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'release_speed'</span>, <span class="st">'release_pos_x'</span>, <span class="st">'release_pos_z'</span>, <span class="st">'batter'</span>, <span class="st">'pitcher'</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'zone'</span>, <span class="st">'balls'</span>, <span class="st">'strikes'</span>, <span class="st">'pfx_x'</span>, <span class="st">'pfx_z'</span>, <span class="st">'plate_x'</span>, <span class="st">'plate_z'</span>, </span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'outs_when_up'</span>, <span class="st">'inning'</span>, <span class="st">'sz_top'</span>, <span class="st">'sz_bot'</span>, <span class="st">'release_spin_rate'</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">'release_extension'</span>, <span class="st">'game_pk'</span>, <span class="st">'release_pos_y'</span>, <span class="st">'at_bat_number'</span>, </span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">'pitch_number'</span>, <span class="st">'home_score'</span>, <span class="st">'away_score'</span>, <span class="st">'bat_score'</span>, <span class="st">'fld_score'</span>, </span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'spin_axis'</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler, OneHotEncoder</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>numerical_transformer <span class="op">=</span> StandardScaler()</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>categorical_transformer <span class="op">=</span> OneHotEncoder()</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> ColumnTransformer(</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    transformers<span class="op">=</span>[</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>        (<span class="st">'cat'</span>, categorical_transformer, categorical_col),</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>        (<span class="st">'num'</span>, numerical_transformer, numerical_col)</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>pipeline <span class="op">=</span> Pipeline(steps<span class="op">=</span>[</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'preprocessor'</span>, preprocessor), </span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'classifier'</span>, LogisticRegression(penalty<span class="op">=</span><span class="st">'l1'</span>, solver<span class="op">=</span><span class="st">'saga'</span>, </span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>                                      max_iter<span class="op">=</span><span class="dv">1000</span>))</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> X <span class="op">=</span> clean_df[numerical_col <span class="op">+</span> categorical_col] </span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> clean_df[<span class="st">'pitch_outcome'</span>]</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">1918</span>)</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>pipeline.fit(X_train, y_train)</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> pipeline.named_steps[<span class="st">'classifier'</span>]</span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>intercept <span class="op">=</span> model.intercept_</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>coefficients <span class="op">=</span> model.coef_[<span class="dv">0</span>]</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> (</span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>    recall_score, precision_score, f1_score, accuracy_score, confusion_matrix</span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> pipeline.predict(X_test)</span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> y_test.astype(<span class="bu">int</span>)</span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> y_pred.astype(<span class="bu">int</span>)</span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>accuracy <span class="op">=</span> accuracy_score(y_test, y_pred)</span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a>recall <span class="op">=</span> recall_score(y_test, y_pred, average<span class="op">=</span><span class="st">'binary'</span>)</span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>precision <span class="op">=</span> precision_score(y_test, y_pred, average<span class="op">=</span><span class="st">'binary'</span>)</span>
+<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> f1_score(y_test, y_pred, average<span class="op">=</span><span class="st">'binary'</span>)</span>
+<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a>cm <span class="op">=</span> confusion_matrix(y_test, y_pred)</span>
+<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Accuracy: </span><span class="sc">{</span>accuracy<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Recall: </span><span class="sc">{</span>recall<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Precision: </span><span class="sc">{</span>precision<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"F1 Score: </span><span class="sc">{</span>f1<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Confusion Matrix:"</span>)</span>
+<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Accuracy: 0.7816103669190448
+Recall: 0.731134320134245
+Precision: 0.8725490196078431
+F1 Score: 0.7956066118855866
+Confusion Matrix:
+[[24489  4264]
+ [10735 29192]]</code></pre>
+</div>
+</div>
+<p>Coefficients associated with pitch groups:</p>
+<div id="bd0d4ee0" class="cell" data-execution_count="7">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pipeline.fit(X_train, y_train)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>categorical_transformer <span class="op">=</span> pipeline.named_steps[<span class="st">'preprocessor'</span>].transformers_[<span class="dv">0</span>][<span class="dv">1</span>]</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>categorical_feature_names <span class="op">=</span> categorical_transformer.get_feature_names_out(</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    categorical_col</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>all_feature_names <span class="op">=</span> numerical_col <span class="op">+</span> <span class="bu">list</span>(categorical_feature_names) </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>feature_importance <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Feature'</span>: all_feature_names,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Coefficient'</span>: coefficients</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>feature_importance[<span class="st">'Abs_Coefficient'</span>] <span class="op">=</span> feature_importance[<span class="st">'Coefficient'</span>].<span class="bu">abs</span>()</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>pitch_group_features <span class="op">=</span> [</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    feature <span class="cf">for</span> feature <span class="kw">in</span> categorical_feature_names <span class="cf">if</span> <span class="st">'pitch_group'</span> <span class="kw">in</span> feature</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>feature_importance_pitch_group <span class="op">=</span> feature_importance[</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    feature_importance[<span class="st">'Feature'</span>].isin(pitch_group_features)</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(feature_importance_pitch_group[[<span class="st">'Feature'</span>, <span class="st">'Coefficient'</span>, </span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">'Abs_Coefficient'</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  Feature  Coefficient  Abs_Coefficient
+117  pitch_group_breaking     0.010872         0.010872
+118  pitch_group_fastball     0.002794         0.002794
+119   pitch_group_knuckle     0.027121         0.027121
+120  pitch_group_offspeed     0.019790         0.019790</code></pre>
+</div>
+</div>
+</section>
+<section id="results-interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="results-interpretation">Results Interpretation</h2>
+<ul>
+<li>Overall, this model predicts pitch outcome correctly 78.2% of the time</li>
+<li>The pitch group variable seems to have a meaningful contribution to this prediction capability</li>
+<li>Based on these results, we can use pitch group sabermetrics (velocity and break) to help assess relative pitcher performance</li>
+</ul>
+</section>
+<section id="k-means-clustering-assessment" class="level2">
+<h2 class="anchored" data-anchor-id="k-means-clustering-assessment">K-Means Clustering Assessment</h2>
+<ul>
+<li>Strategy used to help pitchers “maximize their effectiveness” (<span class="citation" data-cites="andrews2021analytics">Andrews et al. (<a href="#ref-andrews2021analytics" role="doc-biblioref">2021</a>)</span>)</li>
+<li>Groups players with similar break and velocity tendencies</li>
+<li>Sort those groups into relative rankings to find pitcher priorities</li>
+</ul>
+</section>
+<section id="pitchers-prioritizing-movement" class="level2">
+<h2 class="anchored" data-anchor-id="pitchers-prioritizing-movement">Pitchers Prioritizing Movement</h2>
+<ul>
+<li>Pitches in the top 30% for both horizonal and vertical break but in the bottom 20% for velocity</li>
+<li>The 5 pitchers with the most pitches that fit this criteria:</li>
+</ul>
+<div id="37a8799a" class="cell" data-execution_count="8">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> clean_df[[<span class="st">'release_speed'</span>, <span class="st">'pfx_x'</span>, <span class="st">'pfx_z'</span>]]</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> pd.get_dummies(features, drop_first<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>scaled_features <span class="op">=</span> scaler.fit_transform(features)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>pca <span class="op">=</span> PCA(n_components<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>pca_components <span class="op">=</span> pca.fit_transform(scaled_features)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span><span class="dv">5</span>, random_state<span class="op">=</span><span class="dv">1918</span>)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'cluster'</span>] <span class="op">=</span> kmeans.fit_predict(pca_components)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'velocity_rank'</span>] <span class="op">=</span> clean_df.groupby(<span class="st">'cluster'</span>)[<span class="st">'release_speed'</span>]<span class="op">\</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    .rank(pct<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'hbreak_rank'</span>] <span class="op">=</span> clean_df.groupby(<span class="st">'cluster'</span>)[<span class="st">'pfx_x'</span>]<span class="op">\</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    .rank(pct<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'vbreak_rank'</span>] <span class="op">=</span> clean_df.groupby(<span class="st">'cluster'</span>)[<span class="st">'pfx_z'</span>]<span class="op">\</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    .rank(pct<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'vbreak_decile'</span>] <span class="op">=</span> (clean_df[<span class="st">'vbreak_rank'</span>] <span class="op">*</span> <span class="dv">10</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'velocity_decile'</span>] <span class="op">=</span> (clean_df[<span class="st">'velocity_rank'</span>] <span class="op">*</span> <span class="dv">10</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'hbreak_decile'</span>] <span class="op">=</span> (clean_df[<span class="st">'hbreak_rank'</span>] <span class="op">*</span> <span class="dv">10</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'velocity_improvement_candidate'</span>] <span class="op">=</span> (</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'vbreak_decile'</span>] <span class="op">&gt;=</span> <span class="dv">3</span>) <span class="op">&amp;</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'hbreak_decile'</span>] <span class="op">&gt;=</span> <span class="dv">3</span>) <span class="op">&amp;</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'velocity_decile'</span>] <span class="op">&lt;=</span> <span class="dv">2</span>)</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>velocity_improvement_candidates <span class="op">=</span> clean_df[clean_df[</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">'velocity_improvement_candidate'</span>] <span class="op">==</span> <span class="va">True</span>].copy()</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>velocity_improvement_candidates_sorted <span class="op">=</span> (</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>    velocity_improvement_candidates.sort_values(by<span class="op">=</span><span class="st">'pitcher'</span>)</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>top_5_velocity_improvement_pitchers <span class="op">=</span> velocity_improvement_candidates_sorted[</span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>    <span class="st">'pitcher'</span>].value_counts().head(<span class="dv">5</span>)</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Top 5 Pitchers Prioritizing Movement:"</span>)</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(top_5_velocity_improvement_pitchers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Top 5 Pitchers Prioritizing Movement:
+pitcher
+542881    1072
+596295     745
+676710     686
+594902     676
+684007     655
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+</section>
+<section id="pitcher-names---prioritizing-movement" class="level2">
+<h2 class="anchored" data-anchor-id="pitcher-names---prioritizing-movement">Pitcher Names - Prioritizing Movement</h2>
+<ul>
+<li>542881: Tyler Anderson</li>
+<li>596295: Austin Gomber</li>
+<li>676710: Kutter Crawford</li>
+<li>594902: Ben Lively</li>
+<li>684007: Shota Imanaga (<span class="citation" data-cites="razz2024id"><span>“MLBAMIDs for Active MLB Players”</span> (<a href="#ref-razz2024id" role="doc-biblioref">2024</a>)</span>)</li>
+</ul>
+</section>
+<section id="pitchers-prioritizing-velocity" class="level2">
+<h2 class="anchored" data-anchor-id="pitchers-prioritizing-velocity">Pitchers Prioritizing Velocity</h2>
+<ul>
+<li>Pitches in the top 20% for velocity but the bottom 30% for both horizonal and vertical break</li>
+<li>The 5 pitchers with the most pitches that fit this criteria:</li>
+</ul>
+<div id="f95c2493" class="cell" data-execution_count="9">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'break_improvement_candidate'</span>] <span class="op">=</span> (</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'vbreak_decile'</span>] <span class="op">&lt;=</span> <span class="dv">3</span>) <span class="op">&amp;</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'hbreak_decile'</span>] <span class="op">&lt;=</span> <span class="dv">3</span>) <span class="op">&amp;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'velocity_decile'</span>] <span class="op">&gt;=</span> <span class="dv">8</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>break_improvement_candidates <span class="op">=</span> clean_df[clean_df[</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'break_improvement_candidate'</span>] <span class="op">==</span> <span class="va">True</span>].copy()</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>break_improvement_candidates_sorted <span class="op">=</span> break_improvement_candidates.sort_values(</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    by<span class="op">=</span><span class="st">'pitcher'</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>top_5_break_improvement_pitchers <span class="op">=</span> break_improvement_candidates_sorted[</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'pitcher'</span>].value_counts().head(<span class="dv">5</span>)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Top 5 Pitchers Prioritizing Velocity:"</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(top_5_break_improvement_pitchers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Top 5 Pitchers Prioritizing Velocity:
+pitcher
+667755    518
+665625    367
+666974    364
+694973    358
+656557    331
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+</section>
+<section id="pitcher-names---prioritizing-velocity" class="level2">
+<h2 class="anchored" data-anchor-id="pitcher-names---prioritizing-velocity">Pitcher Names - Prioritizing Velocity</h2>
+<ul>
+<li>667755: Jose Soriano</li>
+<li>665625: Elvis Peguero</li>
+<li>666974: Yennier Cano</li>
+<li>694973: Paul Skenes</li>
+<li>656557: Tanner Houck (<span class="citation" data-cites="razz2024id"><span>“MLBAMIDs for Active MLB Players”</span> (<a href="#ref-razz2024id" role="doc-biblioref">2024</a>)</span>)</li>
+</ul>
+</section>
+<section id="results-interpretation-1" class="level2">
+<h2 class="anchored" data-anchor-id="results-interpretation-1">Results Interpretation</h2>
+<ul>
+<li>Players prioritizing movement average 1.45 home runs per game and an earned run average (ERA) of 3.93 (<span class="citation" data-cites="reference2024stats"><span>“Baseball Stats &amp; History”</span> (<a href="#ref-reference2024stats" role="doc-biblioref">2024</a>)</span>)
+<ul>
+<li>Need significant zone control</li>
+</ul></li>
+<li>Players prioritizing velocity average 0.65 home runs per game and an ERA of 2.93 (<span class="citation" data-cites="reference2024stats"><span>“Baseball Stats &amp; History”</span> (<a href="#ref-reference2024stats" role="doc-biblioref">2024</a>)</span>)
+<ul>
+<li>Generally considered elite pitchers in 2024</li>
+<li>Average shorter stints in-game: arm fatigue</li>
+</ul></li>
+</ul>
+</section>
+<section id="conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
+<ul>
+<li>Pitch outcome can be predicted with relative success using sabermetric statistics</li>
+<li>Among those meaningful predictors, sabermetrics regarding pitch differentiation (velocity and break) demonstrate clear performance differences between pitchers</li>
+</ul>
+</section>
+<section id="references" class="level2 unnumbered">
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-andrews2021analytics" class="csl-entry" role="listitem">
+Andrews, Chris, Andres Castillo, Alex Steinhoff, and Russell Walker. 2021. <span>“Using Data Analytics to Improve Pitcher Performance in Major League Baseball.”</span> <em>AnalyticsInforms</em>.
+</div>
+<div id="ref-reference2024stats" class="csl-entry" role="listitem">
+<span>“Baseball Stats &amp; History.”</span> 2024. <em>Baseball Reference</em>.
+</div>
+<div id="ref-costa2019sabr" class="csl-entry" role="listitem">
+Costa, Gabriel, Michael Huber, and John Saccoman. 2019. <em>Understanding Sabermetrics: An Introduction to the Science of Baseball Statistics</em>. McFarland &amp; Company.
+</div>
+<div id="ref-csas2024challenge" class="csl-entry" role="listitem">
+<span>“CSAS 2025: Data Challenge.”</span> 2024. <em>Connecticut Data Science Lab</em>.
+</div>
+<div id="ref-healey2017moneyball" class="csl-entry" role="listitem">
+Healey, Glenn. 2017. <span>“The New Moneyball: How Ballpark Sensors Are Changing Baseball.”</span> <em>Proceedings of the IEEE</em> 105 (11): 1999–2002.
+</div>
+<div id="ref-maschino2023metrics" class="csl-entry" role="listitem">
+Maschino, Jeremy. 2023. <span>“Pitching Metrics.”</span> <em>Pitch Profiler</em>.
+</div>
+<div id="ref-razz2024id" class="csl-entry" role="listitem">
+<span>“MLBAMIDs for Active MLB Players.”</span> 2024. <em>Razzball</em>.
+</div>
+<div id="ref-mlb2024spinrate" class="csl-entry" role="listitem">
+<span>“Spin Rate (SR).”</span> 2024. <em>MLB</em>.
+</div>
+<div id="ref-tango2007book" class="csl-entry" role="listitem">
+Tango, Tom, Mitchel Lichtman, and Andrew Dolphin. 2007. <em>The Book: Playing the Percentages in Baseball</em>. Potomac Books.
+</div>
+<div id="ref-tibshirani1996regression" class="csl-entry" role="listitem">
+Tibshirani, Robert. 1996. <span>“Regression Shrinkage and Selection via the <span>LASSO</span>.”</span> <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 58 (1): 267–88.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

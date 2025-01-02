@@ -1,0 +1,714 @@
+---
+title: "Final Project Code"
+format: 
+  html: 
+    code-fold: true
+    html-math-method: katex
+  pdf: 
+    geometry: 
+      - top=30mm
+      - left=20mm
+---
+
+Importing data set:
+```{python}
+import os
+import pandas as pd
+import pyarrow as pa
+
+file_path = (
+    'data/statcast_pitch_swing_data_20240402_20240630.arrow'
+)
+
+table = pa.ipc.open_file(file_path).read_all()
+
+df = table.to_pandas()
+
+print(df.head())
+```
+
+## Data Cleaning
+
+Renaming 'type' to 'category' to limit confusion:
+```{python}
+df.rename(columns={'type': 'category'}, inplace=True)
+```
+
+Finding variables with high missing percentages and removing them from the dataframe:
+```{python}
+missing_percentage = df.isnull().mean() * 100
+print("Missing Percentage:\n", missing_percentage)
+```
+
+```{python}
+high_missing_columns = missing_percentage[missing_percentage >= 65].index
+print(high_missing_columns)
+```
+
+```{python}
+df = df.drop(high_missing_columns, axis=1)
+print(df.columns)
+```
+
+```{python}
+df = df.drop(['bat_speed', 'swing_length'], axis=1)
+```
+
+Finding and removing redundant variables:
+```{python}
+print(df.game_date)
+```
+
+```{python}
+print(df.game_year)
+```
+
+```{python}
+are_fielder2_equal = (df['fielder_2'] == df['fielder_2_1']).all()
+print(are_fielder2_equal)
+```
+
+```{python}
+df = df.drop(['game_year', 'fielder_2_1'], axis=1)
+print(df)
+```
+
+Finding and removing invalid values for pitch speed:
+```{python}
+out_of_range = df[(df['release_speed'] < 60) | (df['release_speed'] > 105)]
+unique_out_of_range = out_of_range['release_speed'].unique()
+
+print("Unique values outside the valid range:")
+print(unique_out_of_range)
+```
+
+```{python}
+df.drop(
+    df[(df['release_speed'] < 60) | (df['release_speed'] > 105)].index, 
+    inplace=True
+)
+print(df)
+```
+
+Ensuring that the possible home and away teams align:
+```{python}
+unique_home_teams = df['home_team'].unique()
+print(f"Unique values in 'home_team':")
+print(unique_home_teams)
+```
+
+```{python}
+unique_away_teams = df['away_team'].unique()
+print(f"Unique values in 'away_team':")
+print(unique_away_teams)
+```
+
+Removing any remaining rows with missing data:
+```{python}
+clean_df = df.dropna()
+print(clean_df)
+```
+
+
+## Data Exploration
+
+Printing the unique categories and events:
+```{python}
+unique_category = clean_df['category'].unique()
+print(f"Unique values in 'category':")
+print(unique_category)
+```
+
+```{python}
+unique_events = clean_df['events'].unique()
+print(f"Unique values in 'events':")
+print(unique_events)
+```
+
+Designating the unique categories and events as either good or bad based on the pitcher's perspective, creating the binary 'pitch_outcome' variable:
+```{python}
+bad_events = ['single', 'walk', 'home_run', 'double', 'field_error', 
+              'hit_by_pitch', 'catcher_interf', 'triple', 'sac_fly', 
+              'sac_bunt', 'stolen_base_2b']
+good_events = ['strikeout', 'field_out', 'force_out', 
+               'grounded_into_double_play', 'double_play', 'fielders_choice',
+               'caught_stealing_home', 'fielders_choice_out', 
+               'caught_stealing_2b', 'strikeout_double_play', 
+               'caught_stealing_3b', 'other_out', 
+               'pickoff_caught_stealing_home', 'pickoff_caught_stealing_3b',
+               'pickoff_3b', 'sac_fly_double_play', 'pickoff_1b', 'triple_play']
+
+def classify_pitch_outcome(row):
+    if row['events'] in bad_events or row['category'] == 'B':
+        return '0'
+    elif row['events'] in good_events or row['category'] == 'S':
+        return '1'
+    else:
+        return 'None'
+
+clean_df['pitch_outcome'] = clean_df.apply(classify_pitch_outcome, axis=1)
+
+clean_df['pitch_outcome'].head()
+```
+
+Removing pitch types that are rare/unuseful for the pitch outcome analysis:
+```{python}
+clean_df = clean_df.drop(
+    clean_df[clean_df['pitch_type'].isin(['PO', 'EP', 'FA', 'CS'])].index
+)
+print(clean_df)
+```
+
+```{python}
+outcome_counts = clean_df['pitch_outcome'].value_counts()
+print(outcome_counts)
+```
+
+Engineering the 'pitch_group' variable where 'pitch_types' are sorted based on goal:
+```{python}
+pitch_group_mapping = {
+    'FC': 'fastball', 'FF': 'fastball', 'FS': 'fastball', 'SI': 'fastball',
+    'FO': 'fastball', 'SL': 'breaking', 'ST': 'breaking', 'CU': 'breaking',
+    'SC': 'breaking', 'KC': 'breaking', 'SV': 'breaking', 'CH': 'offspeed',
+    'KN': 'knuckle'
+}
+
+clean_df['pitch_group'] = clean_df['pitch_type'].apply(
+    lambda x: pitch_group_mapping.get(x, 'unknown')
+)
+```
+
+Creating a violin plot that charts velocity based on pitch group:
+```{python}
+from plotnine import *
+
+clean_filtered_df = clean_df[clean_df['pitch_group'] != 'unknown']
+
+colors = ['#ADD8E6', '#0096FF', '#5D3FD3', '#6495ED']
+
+violin_plot = (
+    ggplot(clean_filtered_df, aes(x='pitch_group', y='release_speed', fill='pitch_group'))
+    + geom_violin(show_legend=False)
+    + scale_fill_manual(values=colors)
+    + labs(title='Pitch Group vs Velocity', x='Pitch Group', y='Velocity (mph)')
+    + theme_bw()
+)
+
+violin_plot.show()
+```
+
+Demonstrating what the pitch zone looks like:
+```{python}
+import matplotlib.pyplot as plt
+
+fig, axs = plt.subplots(3, 3, figsize=(6, 8), gridspec_kw={'wspace': 0, 'hspace': 0})
+
+fig.suptitle("Strike Zone From the Catcher's Perspective", fontsize=16)
+
+axs[0, 0].text(0.5, 0.5, '1', fontsize=20, ha='center', va='center')
+axs[0, 1].text(0.5, 0.5, '2', fontsize=20, ha='center', va='center')
+axs[0, 2].text(0.5, 0.5, '3', fontsize=20, ha='center', va='center')
+
+axs[1, 0].text(0.5, 0.5, '4', fontsize=20, ha='center', va='center')
+axs[1, 1].text(0.5, 0.5, '5', fontsize=20, ha='center', va='center')
+axs[1, 2].text(0.5, 0.5, '6', fontsize=20, ha='center', va='center')
+
+axs[2, 0].text(0.5, 0.5, '7', fontsize=20, ha='center', va='center')
+axs[2, 1].text(0.5, 0.5, '8', fontsize=20, ha='center', va='center')
+axs[2, 2].text(0.5, 0.5, '9', fontsize=20, ha='center', va='center')
+
+for ax in axs.flat:
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+for ax in axs.flat:
+    for _, spine in ax.spines.items():
+        spine.set_visible(True)  
+        spine.set_linewidth(1)   
+        spine.set_edgecolor('black') 
+
+plt.tight_layout(pad=0)  
+plt.subplots_adjust(top=0.9)  
+plt.show()
+```
+
+Heat map showing frequency of pitch per zone for left-handed and right-handed pitchers:
+```{python}
+def assign_x_coord(row):
+    if row.zone in [1, 4, 7]:
+        return 1
+    if row.zone in [2, 5, 8]:
+        return 2
+    if row.zone in [3, 6, 9]:
+        return 3
+
+def assign_y_coord(row):
+    if row.zone in [1, 2, 3]:
+        return 3
+    if row.zone in [4, 5, 6]:
+        return 2
+    if row.zone in [7, 8, 9]:
+        return 1
+
+clean_df_zones = clean_df.copy().loc[df.zone <= 9]
+
+clean_df_zones['zone_x'] = clean_df_zones.apply(assign_x_coord, axis=1)
+clean_df_zones['zone_y'] = clean_df_zones.apply(assign_y_coord, axis=1)
+
+clean_df_lefties = clean_df_zones[clean_df_zones['p_throws'] == 'L']
+clean_df_righties = clean_df_zones[clean_df_zones['p_throws'] == 'R']
+
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 2, 1) 
+plt.hist2d(
+    clean_df_lefties.zone_x, clean_df_lefties.zone_y, bins=3, cmap='Blues',
+    vmin=0, vmax=7500
+)
+plt.title('Heat Map per Zone (Lefties)')
+plt.gca().get_xaxis().set_visible(False)
+plt.gca().get_yaxis().set_visible(False)
+cb_left = plt.colorbar()
+cb_left.set_label('Counts in Bin')
+
+
+plt.subplot(1, 2, 2) 
+plt.hist2d(
+    clean_df_righties.zone_x, clean_df_righties.zone_y, bins=3, cmap='Greens', 
+    vmin=0, vmax=18000
+)
+plt.title('Heat Map per Zone (Righties)')
+plt.gca().get_xaxis().set_visible(False)
+plt.gca().get_yaxis().set_visible(False)
+cb_right = plt.colorbar()
+cb_right.set_label('Counts in Bin')
+
+plt.tight_layout()
+plt.show()
+```
+
+Scatter plot showing vertical and horizontal break for right-handed and left-handed pitchers, color-coded by pitch group:
+```{python}
+clean_df['pfx_x'] = clean_df['pfx_x'] * 12 
+clean_df['pfx_z'] = clean_df['pfx_z'] * 12  
+
+(ggplot(clean_df, aes(x='pfx_x', y='pfx_z', color='pitch_group')) +
+    geom_point() +
+    labs(title='Vertical and Horizontal Break of Pitches',
+         x='Horizontal Break (inches)',
+         y='Vertical Break (inches)',
+         color='Pitch Group') +
+    coord_fixed(ratio=1) +
+    theme(figure_size=(7, 5), legend_position='bottom') +
+    facet_wrap('~p_throws')  
+)
+```
+
+Bar plot showing average spin rate for each pitch group:
+```{python}
+avg_spin_rate_by_pitch_group = clean_filtered_df.groupby('pitch_group')[
+    'release_spin_rate'].mean().reset_index()
+
+(ggplot(avg_spin_rate_by_pitch_group, 
+        aes(x='pitch_group', y='release_spin_rate', fill='pitch_group'))
+ + geom_bar(stat='identity', show_legend=False)
+ + labs(
+     title='Average Release Spin Rate by Pitch Group',
+     x='Pitch Type',
+     y='Average Release Spin Rate (RPM)'
+   )
+ + theme_minimal()
+)
+```
+
+Determining whether data is normally distributed:
+```{python}
+from scipy.stats import shapiro
+
+numeric_columns = clean_df.select_dtypes(include=['float64', 'int64']).columns
+
+for column in numeric_columns:
+    stat, p_value = shapiro(clean_df[column])
+    print(f"Shapiro-Wilk test for {column}: Statistic={stat}, P-value={p_value}")
+    
+    if p_value < 0.05:
+        print(f"{column} is NOT normally distributed (reject H0).")
+    else:
+        print(f"{column} is normally distributed (fail to reject H0).")
+```
+
+Because data is non-parametric, use Kruskal-Wallis test to determine if there is a statistically significant difference in velocity based on pitch group:
+```{python}
+from scipy.stats import kruskal
+
+pitch_groups = clean_df['pitch_group'].unique()
+
+grouped_data = [
+    clean_df[clean_df['pitch_group'] == group]['release_speed'].dropna() 
+    for group in pitch_groups
+]
+
+stat, p_value = kruskal(*grouped_data)
+
+print(f"Kruskal-Wallis test result: Statistic={stat}, P-value={p_value}")
+
+if p_value < 0.05:
+    print("There is a significant difference in pitch speeds between pitch groups "
+          "(reject H0).")
+else:
+    print("There is no significant difference in pitch speeds between pitch groups "
+          "(fail to reject H0).")
+```
+
+Kruskal-Wallis test to see if there is a statistically significant difference in horizontal and vertical break based on pitch group:
+```{python}
+grouped_horizontal = [
+    clean_df[clean_df['pitch_group'] == group]['pfx_x'].dropna() 
+    for group in pitch_groups
+]
+
+grouped_vertical = [
+    clean_df[clean_df['pitch_group'] == group]['pfx_z'].dropna() 
+    for group in pitch_groups
+]
+
+stat_x, p_value_x = kruskal(*grouped_horizontal)
+print(f"Kruskal-Wallis test for horizontal break: Statistic={stat_x}, "
+      f"P-value={p_value_x}")
+
+stat_z, p_value_z = kruskal(*grouped_vertical)
+print(f"Kruskal-Wallis test for vertical break: Statistic={stat_z}, P-value={p_value_z}")
+
+if p_value_x < 0.05:
+    print("There is a significant difference in horizontal breaks between pitch groups "
+          "(reject H0).")
+else:
+    print("There is no significant difference in horizontal breaks between pitch groups "
+          "(fail to reject H0).")
+
+if p_value_z < 0.05:
+    print("There is a significant difference in vertical breaks between pitch groups "
+          "(reject H0).")
+else:
+    print("There is no significant difference in vertical breaks between pitch groups "
+          "(fail to reject H0).")
+```
+
+Kruskal-Wallis test to determine if there is a statistically significant difference in spin rate based on pitch group:
+```{python}
+grouped_spin_rate = [
+    clean_df[clean_df['pitch_group'] == group]['release_spin_rate'].dropna() 
+    for group in pitch_groups
+]
+
+stat, p_value = kruskal(*grouped_spin_rate)
+
+print(f"Kruskal-Wallis test result for release spin rate: Statistic={stat}, "
+      f"P-value={p_value}")
+
+if p_value < 0.05:
+    print("There is a significant difference in release spin rates between pitch "
+          "groups (reject H0).")
+else:
+    print("There is no significant difference in release spin rates between pitch "
+          "groups (fail to reject H0).")
+```
+
+
+# Data Analysis
+
+Determine necessary number of clusters to limit inertia while standardizing the data to prepare for k-means clustering:
+```{python}
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+clean_df = clean_df[clean_df['pitch_group'] == 'fastball']
+
+features = clean_df[['release_speed', 'pfx_x', 'pfx_z']]
+scaler = StandardScaler()
+scaled_features = scaler.fit_transform(features)
+
+inertia = []
+k_range = range(1, 16)  
+
+for k in k_range:
+    kmeans = KMeans(n_clusters=k, random_state=1918)
+    kmeans.fit(scaled_features)
+    inertia.append(kmeans.inertia_)
+
+plt.figure(figsize=(8, 6))
+plt.plot(k_range, inertia, marker='o')
+plt.title('Elbow Method for Optimal Number of Clusters')
+plt.xlabel('Number of Clusters')
+plt.ylabel('Inertia')
+plt.show()
+```
+
+Determine the variance explained by each PCA component:
+```{python}
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components=2)
+pca_components = pca.fit_transform(features)
+
+print("Explained variance ratio by each component:")
+print(pca.explained_variance_ratio_)
+
+print("\nPrincipal components (directions):")
+print(pca.components_)
+```
+
+Visualization of 5 created clusters based on elbow method:
+```{python}
+kmeans = KMeans(n_clusters=5, random_state=1918)
+clean_df['cluster'] = kmeans.fit_predict(pca_components)
+
+plt.figure(figsize=(8, 6))
+plt.scatter(pca_components[:, 0], pca_components[:, 1], 
+            c=clean_df['cluster'], cmap='viridis', 
+            s=50, alpha=0.7)
+
+plt.title('KMeans Clustering - PCA Projection (2D)')
+plt.xlabel('PCA Component 1')
+plt.ylabel('PCA Component 2')
+plt.colorbar(label='Cluster')
+plt.show()
+```
+
+Using k-means clustering to group pitchers based on velocity, horizontal break, and vertical break tendencies, then ranking those clusters to create deciles:
+
+Those rankings are then used to determine pitchers prioritizing movement with the most pitches in the top 30% for vertical and horizontal break but in the bottom 20% for velocity:
+```{python}
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+features = clean_df[['release_speed', 'pfx_x', 'pfx_z']]
+
+features = pd.get_dummies(features, drop_first=True)
+
+scaler = StandardScaler()
+scaled_features = scaler.fit_transform(features)
+
+pca = PCA(n_components=2)
+pca_components = pca.fit_transform(scaled_features)
+
+kmeans = KMeans(n_clusters=5, random_state=1918)
+clean_df['cluster'] = kmeans.fit_predict(pca_components)
+
+clean_df.loc[:, 'velocity_rank'] = clean_df.groupby('cluster')['release_speed'].rank(pct=True)
+clean_df.loc[:, 'hbreak_rank'] = clean_df.groupby('cluster')['pfx_x'].rank(pct=True)
+clean_df.loc[:, 'vbreak_rank'] = clean_df.groupby('cluster')['pfx_z'].rank(pct=True)
+
+clean_df.loc[:, 'vbreak_decile'] = (clean_df['vbreak_rank'] * 10).astype(int)
+clean_df.loc[:, 'velocity_decile'] = (clean_df['velocity_rank'] * 10).astype(int)
+clean_df.loc[:, 'hbreak_decile'] = (clean_df['hbreak_rank'] * 10).astype(int)
+
+clean_df['velocity_improvement_candidate'] = (
+    (clean_df['vbreak_decile'] >= 3) & 
+    (clean_df['hbreak_decile'] >= 3) & 
+    (clean_df['velocity_decile'] <= 2)
+)
+
+velocity_improvement_candidates = clean_df[clean_df['velocity_improvement_candidate'] == True].copy()
+
+velocity_improvement_candidates_sorted = velocity_improvement_candidates.sort_values(by='pitcher')
+
+top_5_velocity_improvement_pitchers = velocity_improvement_candidates_sorted['pitcher'].value_counts().head(5)
+
+print("Top 5 Pitchers Prioritizing Movement:")
+print(top_5_velocity_improvement_pitchers)
+```
+
+542881: Tyler Anderson
+596295: Austin Gomber
+676710: Kutter Crawford
+594902: Ben Lively
+684007: Shota Imanaga
+
+Determine pitchers prioritizing velocity with the most pitches in the top 20% for velocity but the bottom 30% for both horizonal and vertical break:
+```{python}
+clean_df['break_improvement_candidate'] = (
+    (clean_df['vbreak_decile'] <= 3) & 
+    (clean_df['hbreak_decile'] <= 3) &
+    (clean_df['velocity_decile'] >= 8)
+)
+
+break_improvement_candidates = clean_df[clean_df[
+    'break_improvement_candidate'] == True].copy()
+
+break_improvement_candidates_sorted = break_improvement_candidates.sort_values(
+    by='pitcher')
+
+top_5_break_improvement_pitchers = break_improvement_candidates_sorted[
+    'pitcher'].value_counts().head(5)
+
+print("\nTop 5 Pitchers Prioritizing Velocity:")
+print(top_5_break_improvement_pitchers)
+```
+
+667755: Jose Soriano
+665625: Elvis Peguero
+666974: Yennier Cano
+694973: Paul Skenes
+656557: Tanner Houck
+
+Sort the variables into categorical and numerical groups:
+```{python}
+categorical_col = [
+    'pitch_type',  
+    'stand', 
+    'p_throws', 
+    'home_team', 
+    'away_team', 
+    'bb_type', 
+    'inning_topbot', 
+    'if_fielding_alignment', 
+    'of_fielding_alignment', 
+    'pitch_group'
+]
+
+numerical_col = [
+    'release_speed', 'release_pos_x', 'release_pos_z', 'batter', 'pitcher',
+    'zone', 'balls', 'strikes', 'pfx_x', 'pfx_z', 'plate_x', 'plate_z', 
+    'outs_when_up', 'inning', 'sz_top', 'sz_bot', 'release_spin_rate',
+    'release_extension', 'game_pk', 'release_pos_y', 'at_bat_number', 
+    'pitch_number', 'home_score', 'away_score', 'bat_score', 'fld_score', 'spin_axis'
+]
+```
+
+Scale both the numerical and categorical variables and enter them into a preprocessor:
+```{python}
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+
+numerical_transformer = StandardScaler()
+
+categorical_transformer = OneHotEncoder()
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('cat', categorical_transformer, categorical_col),
+        ('num', numerical_transformer, numerical_col)
+    ]
+)
+```
+
+Use a pipeline to turn the preprocessed variables into a LASSO logistic model; label X and Y variables and sort the data into training and testing sets before fitting the model:
+```{python}
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+
+pipeline = Pipeline(steps=[
+    ('preprocessor', preprocessor), 
+    ('classifier', LogisticRegression(penalty='l1', solver='liblinear', 
+                                      max_iter=1000))
+])
+
+X = X = clean_df[numerical_col + categorical_col] 
+y = clean_df['pitch_outcome']
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=1918)
+
+pipeline.fit(X_train, y_train)
+```
+
+Determine the intercept and coefficients from the LASSO logistic model:
+```{python}
+model = pipeline.named_steps['classifier']
+intercept = model.intercept_
+coefficients = model.coef_[0]
+
+intercept, coefficients
+```
+
+Test the model using the test data set, print the validation considerations for the model based on this test:
+```{python}
+from sklearn.metrics import recall_score, precision_score, f1_score, accuracy_score, confusion_matrix
+
+y_pred = pipeline.predict(X_test)
+
+y_test = y_test.astype(int)
+y_pred = y_pred.astype(int)
+
+accuracy = accuracy_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred, average='binary')
+precision = precision_score(y_test, y_pred, average='binary')
+f1 = f1_score(y_test, y_pred, average='binary')
+cm = confusion_matrix(y_test, y_pred)
+
+print(f"Accuracy: {accuracy}")
+print(f"Recall: {recall}")
+print(f"Precision: {precision}")
+print(f"F1 Score: {f1}")
+print("Confusion Matrix:")
+print(cm)
+```
+
+Tune the parameters using a 'grid_search' to ensure the model is optimized, then print the validation values using the best parameters:
+```{python}
+from sklearn.model_selection import GridSearchCV
+
+param_grid = { 
+    'classifier__penalty': ['l1'], 
+    'classifier__solver': ['liblinear', 'saga'],  
+    'classifier__max_iter': [1000, 10000]
+}
+
+grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring='accuracy', verbose=1, n_jobs=-1)
+
+grid_search.fit(X_train, y_train)
+
+print(f"Best parameters found: {grid_search.best_params_}")
+print(f"Best cross-validation score: {grid_search.best_score_}")
+
+best_model = grid_search.best_estimator_
+
+y_pred_best = best_model.predict(X_test)
+y_pred_best = y_pred_best.astype(int)
+
+accuracy_best = accuracy_score(y_test, y_pred_best)
+recall_best = recall_score(y_test, y_pred_best, average='binary')
+precision_best = precision_score(y_test, y_pred_best, average='binary')
+f1_best = f1_score(y_test, y_pred_best, average='binary')
+cm_best = confusion_matrix(y_test, y_pred_best)
+
+print(f"Accuracy: {accuracy_best}")
+print(f"Recall: {recall_best}")
+print(f"Precision: {precision_best}")
+print(f"F1 Score: {f1_best}")
+print("Confusion Matrix:")
+print(cm_best)
+```
+
+Finding the coefficients of the pitch group feature within the LASSO logistic model to determine their importance in creating predictions:
+```{python}
+pipeline.fit(X_train, y_train)
+
+categorical_transformer = pipeline.named_steps['preprocessor'].transformers_[0][1] 
+
+categorical_feature_names = categorical_transformer.get_feature_names_out(categorical_col)
+
+all_feature_names = numerical_col + list(categorical_feature_names) 
+
+feature_importance = pd.DataFrame({
+    'Feature': all_feature_names,
+    'Coefficient': coefficients
+})
+
+feature_importance['Abs_Coefficient'] = feature_importance['Coefficient'].abs()
+
+pitch_group_features = [
+    feature for feature in categorical_feature_names if 'pitch_group' in feature
+]
+
+feature_importance_pitch_group = feature_importance[
+    feature_importance['Feature'].isin(pitch_group_features)
+]
+
+print(feature_importance_pitch_group[['Feature', 'Coefficient', 'Abs_Coefficient']])
+```

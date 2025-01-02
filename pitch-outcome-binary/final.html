@@ -1,0 +1,2492 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Final Project Code</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="final_files/libs/clipboard/clipboard.min.js"></script>
+<script src="final_files/libs/quarto-html/quarto.js"></script>
+<script src="final_files/libs/quarto-html/popper.min.js"></script>
+<script src="final_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="final_files/libs/quarto-html/anchor.min.js"></script>
+<link href="final_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="final_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="final_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="final_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="final_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="final.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Final Project Code</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Importing data set:</p>
+<div id="118b6540" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow <span class="im">as</span> pa</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> (</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'data/statcast_pitch_swing_data_20240402_20240630.arrow'</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> pa.ipc.open_file(file_path).read_all()</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> table.to_pandas()</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  pitch_type   game_date  release_speed  release_pos_x  release_pos_z  \
+0         FF  2024-04-02           95.0          -2.01           5.22   
+1         CH  2024-04-02           88.5          -2.09           4.95   
+2         SI  2024-04-02           95.0          -2.02           5.12   
+3         SI  2024-04-02           90.7          -1.26           5.13   
+4         FF  2024-04-02           95.4          -1.95           5.12   
+
+       player_name  batter  pitcher     events    description  ...  \
+0  Rocchio, Brayan  677587   622491     single  hit_into_play  ...   
+1  Rocchio, Brayan  677587   622491                      foul  ...   
+2  Rocchio, Brayan  677587   622491             called_strike  ...   
+3   Ohtani, Shohei  660271   657277       walk           ball  ...   
+4   Hedges, Austin  595978   622491  strikeout       foul_tip  ...   
+
+  post_home_score post_bat_score post_fld_score if_fielding_alignment  \
+0               0              4              0         Infield shade   
+1               0              4              0              Standard   
+2               0              4              0              Standard   
+3               5              5              2         Infield shade   
+4               0              4              0              Standard   
+
+   of_fielding_alignment spin_axis delta_home_win_exp delta_run_exp bat_speed  \
+0               Standard     239.0             -0.006         0.388       NaN   
+1               Standard     253.0              0.000        -0.045       NaN   
+2               Standard     238.0              0.000        -0.042       NaN   
+3               Standard     234.0              0.009         0.082       NaN   
+4               Standard     238.0              0.008        -0.215       NaN   
+
+  swing_length  
+0          NaN  
+1          NaN  
+2          NaN  
+3          NaN  
+4          NaN  
+
+[5 rows x 94 columns]</code></pre>
+</div>
+</div>
+<section id="data-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning">Data Cleaning</h2>
+<p>Renaming ‘type’ to ‘category’ to limit confusion:</p>
+<div id="05a1e3e1" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df.rename(columns<span class="op">=</span>{<span class="st">'type'</span>: <span class="st">'category'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Finding variables with high missing percentages and removing them from the dataframe:</p>
+<div id="82bbe43c" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>missing_percentage <span class="op">=</span> df.isnull().mean() <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Missing Percentage:</span><span class="ch">\n</span><span class="st">"</span>, missing_percentage)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Missing Percentage:
+ pitch_type             0.000000
+game_date              0.000000
+release_speed          0.073069
+release_pos_x          0.072780
+release_pos_z          0.072780
+                        ...    
+spin_axis              0.635668
+delta_home_win_exp     0.000000
+delta_run_exp          0.005776
+bat_speed             54.996101
+swing_length          55.000144
+Length: 94, dtype: float64</code></pre>
+</div>
+</div>
+<div id="e3cbc62d" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>high_missing_columns <span class="op">=</span> missing_percentage[missing_percentage <span class="op">&gt;=</span> <span class="dv">65</span>].index</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(high_missing_columns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Index(['spin_dir', 'spin_rate_deprecated', 'break_angle_deprecated',
+       'break_length_deprecated', 'hit_location', 'on_3b', 'on_2b', 'on_1b',
+       'hc_x', 'hc_y', 'tfs_deprecated', 'tfs_zulu_deprecated', 'umpire',
+       'sv_id', 'hit_distance_sc', 'launch_speed', 'launch_angle',
+       'estimated_ba_using_speedangle', 'estimated_woba_using_speedangle',
+       'woba_value', 'woba_denom', 'babip_value', 'iso_value',
+       'launch_speed_angle'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div id="25fafc86" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(high_missing_columns, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.columns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Index(['pitch_type', 'game_date', 'release_speed', 'release_pos_x',
+       'release_pos_z', 'player_name', 'batter', 'pitcher', 'events',
+       'description', 'zone', 'des', 'game_type', 'stand', 'p_throws',
+       'home_team', 'away_team', 'category', 'bb_type', 'balls', 'strikes',
+       'game_year', 'pfx_x', 'pfx_z', 'plate_x', 'plate_z', 'outs_when_up',
+       'inning', 'inning_topbot', 'fielder_2', 'vx0', 'vy0', 'vz0', 'ax', 'ay',
+       'az', 'sz_top', 'sz_bot', 'effective_speed', 'release_spin_rate',
+       'release_extension', 'game_pk', 'pitcher_1', 'fielder_2_1', 'fielder_3',
+       'fielder_4', 'fielder_5', 'fielder_6', 'fielder_7', 'fielder_8',
+       'fielder_9', 'release_pos_y', 'at_bat_number', 'pitch_number',
+       'pitch_name', 'home_score', 'away_score', 'bat_score', 'fld_score',
+       'post_away_score', 'post_home_score', 'post_bat_score',
+       'post_fld_score', 'if_fielding_alignment', 'of_fielding_alignment',
+       'spin_axis', 'delta_home_win_exp', 'delta_run_exp', 'bat_speed',
+       'swing_length'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div id="900cc222" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop([<span class="st">'bat_speed'</span>, <span class="st">'swing_length'</span>], axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Finding and removing redundant variables:</p>
+<div id="67be248e" class="cell" data-execution_count="7">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.game_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>0         2024-04-02
+1         2024-04-02
+2         2024-04-02
+3         2024-04-02
+4         2024-04-02
+             ...    
+346245    2024-06-30
+346246    2024-06-30
+346247    2024-06-30
+346248    2024-06-30
+346249    2024-06-30
+Name: game_date, Length: 346250, dtype: object</code></pre>
+</div>
+</div>
+<div id="30981923" class="cell" data-execution_count="8">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.game_year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>0         2024
+1         2024
+2         2024
+3         2024
+4         2024
+          ... 
+346245    2024
+346246    2024
+346247    2024
+346248    2024
+346249    2024
+Name: game_year, Length: 346250, dtype: int32</code></pre>
+</div>
+</div>
+<div id="fd632319" class="cell" data-execution_count="9">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>are_fielder2_equal <span class="op">=</span> (df[<span class="st">'fielder_2'</span>] <span class="op">==</span> df[<span class="st">'fielder_2_1'</span>]).<span class="bu">all</span>()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(are_fielder2_equal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>True</code></pre>
+</div>
+</div>
+<div id="4387dc93" class="cell" data-execution_count="10">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop([<span class="st">'game_year'</span>, <span class="st">'fielder_2_1'</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       pitch_type   game_date  release_speed  release_pos_x  release_pos_z  \
+0              FF  2024-04-02           95.0          -2.01           5.22   
+1              CH  2024-04-02           88.5          -2.09           4.95   
+2              SI  2024-04-02           95.0          -2.02           5.12   
+3              SI  2024-04-02           90.7          -1.26           5.13   
+4              FF  2024-04-02           95.4          -1.95           5.12   
+...           ...         ...            ...            ...            ...   
+346245         SL  2024-06-30           85.9           1.63           5.68   
+346246         SL  2024-06-30           89.9          -1.12           6.41   
+346247         CU  2024-06-30           73.7          -2.44           5.80   
+346248         FF  2024-06-30           94.1           2.97           5.97   
+346249         FF  2024-06-30           99.8          -0.40           6.01   
+
+             player_name  batter  pitcher     events      description  ...  \
+0        Rocchio, Brayan  677587   622491     single    hit_into_play  ...   
+1        Rocchio, Brayan  677587   622491                        foul  ...   
+2        Rocchio, Brayan  677587   622491               called_strike  ...   
+3         Ohtani, Shohei  660271   657277       walk             ball  ...   
+4         Hedges, Austin  595978   622491  strikeout         foul_tip  ...   
+...                  ...     ...      ...        ...              ...  ...   
+346245        Cave, Jake  595909   694363               called_strike  ...   
+346246     Jiménez, Eloy  650391   641755                blocked_ball  ...   
+346247         Rice, Ben  700250   670102               called_strike  ...   
+346248  Merrifield, Whit  593160   677053                        ball  ...   
+346249  De La Cruz, Elly  682829   664854             swinging_strike  ...   
+
+        fld_score post_away_score post_home_score post_bat_score  \
+0               0               4               0              4   
+1               0               4               0              4   
+2               0               4               0              4   
+3               2               2               5              5   
+4               0               4               0              4   
+...           ...             ...             ...            ...   
+346245          2               3               2              3   
+346246          3               3               3              3   
+346247          1               8               1              8   
+346248          6               6               5              5   
+346249          2               0               2              0   
+
+       post_fld_score if_fielding_alignment of_fielding_alignment spin_axis  \
+0                   0         Infield shade              Standard     239.0   
+1                   0              Standard              Standard     253.0   
+2                   0              Standard              Standard     238.0   
+3                   2         Infield shade              Standard     234.0   
+4                   0              Standard              Standard     238.0   
+...               ...                   ...                   ...       ...   
+346245              2              Standard              Standard     144.0   
+346246              3              Standard              Standard     200.0   
+346247              1         Infield shade              Standard      47.0   
+346248              6              Standard              Standard     139.0   
+346249              2         Infield shade              Standard     206.0   
+
+       delta_home_win_exp  delta_run_exp  
+0                  -0.006          0.388  
+1                   0.000         -0.045  
+2                   0.000         -0.042  
+3                   0.009          0.082  
+4                   0.008         -0.215  
+...                   ...            ...  
+346245              0.000         -0.067  
+346246              0.000          0.057  
+346247              0.000         -0.033  
+346248              0.000          0.032  
+346249              0.000         -0.033  
+
+[346250 rows x 66 columns]</code></pre>
+</div>
+</div>
+<p>Finding and removing invalid values for pitch speed:</p>
+<div id="16e1d3de" class="cell" data-execution_count="11">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>out_of_range <span class="op">=</span> df[(df[<span class="st">'release_speed'</span>] <span class="op">&lt;</span> <span class="dv">60</span>) <span class="op">|</span> (df[<span class="st">'release_speed'</span>] <span class="op">&gt;</span> <span class="dv">105</span>)]</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>unique_out_of_range <span class="op">=</span> out_of_range[<span class="st">'release_speed'</span>].unique()</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique values outside the valid range:"</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(unique_out_of_range)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Unique values outside the valid range:
+[39.9 50.3 52.3 58.7 55.  57.5 58.5 54.6 56.5 59.4 46.1 53.2 50.6 49.7
+ 45.5 35.1 37.8 39.  40.7 40.  41.1 43.3 42.7 46.  59.5 53.9 58.8 56.6
+ 43.2 53.4 56.4 59.7 47.2 58.  59.1 58.1 59.2 57.2 55.9 51.8 57.7 50.4
+ 56.  54.4 53.1 54.  52.8 54.1 53.3 53.6 51.  58.6 55.3 55.4 57.1 55.8
+ 54.3 59.9 58.2 53.8 57.4 58.9 57.  57.6 56.1 42.1 56.7 54.2 55.7 56.3
+ 56.8 59.  54.8 58.3 42.4 51.9 49.5 55.1 54.9 53.5 38.6 50.9 54.7 51.3
+ 38.7 55.6 38.9 51.7 42.6 53.  52.6 52.9 51.1 46.9 49.8 59.3 44.2 50.5
+ 48.3 49.9 47.7 53.7 47.5 48.9 50.2 45.9 40.3 41.7 56.2 36.5 35.7 34.3
+ 35.6 36.6 54.5 55.2 36.8 41.2 37.6 43.7 40.8 39.8 48.7 57.8 48.2 48.
+ 46.5 49.3 47.1 47.8 49.6 50.1 57.3 44.1 44.4 44.5 43.8 42.2 42.8 43.
+ 43.9 43.5 41.5 41.9 45.6 45.8 59.8 52.2 40.5 59.6 37.2 42.3 31.9 48.6
+ 40.1 40.2]</code></pre>
+</div>
+</div>
+<div id="cf0c5290" class="cell" data-execution_count="12">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df.drop(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    df[(df[<span class="st">'release_speed'</span>] <span class="op">&lt;</span> <span class="dv">60</span>) <span class="op">|</span> (df[<span class="st">'release_speed'</span>] <span class="op">&gt;</span> <span class="dv">105</span>)].index, </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    inplace<span class="op">=</span><span class="va">True</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       pitch_type   game_date  release_speed  release_pos_x  release_pos_z  \
+0              FF  2024-04-02           95.0          -2.01           5.22   
+1              CH  2024-04-02           88.5          -2.09           4.95   
+2              SI  2024-04-02           95.0          -2.02           5.12   
+3              SI  2024-04-02           90.7          -1.26           5.13   
+4              FF  2024-04-02           95.4          -1.95           5.12   
+...           ...         ...            ...            ...            ...   
+346245         SL  2024-06-30           85.9           1.63           5.68   
+346246         SL  2024-06-30           89.9          -1.12           6.41   
+346247         CU  2024-06-30           73.7          -2.44           5.80   
+346248         FF  2024-06-30           94.1           2.97           5.97   
+346249         FF  2024-06-30           99.8          -0.40           6.01   
+
+             player_name  batter  pitcher     events      description  ...  \
+0        Rocchio, Brayan  677587   622491     single    hit_into_play  ...   
+1        Rocchio, Brayan  677587   622491                        foul  ...   
+2        Rocchio, Brayan  677587   622491               called_strike  ...   
+3         Ohtani, Shohei  660271   657277       walk             ball  ...   
+4         Hedges, Austin  595978   622491  strikeout         foul_tip  ...   
+...                  ...     ...      ...        ...              ...  ...   
+346245        Cave, Jake  595909   694363               called_strike  ...   
+346246     Jiménez, Eloy  650391   641755                blocked_ball  ...   
+346247         Rice, Ben  700250   670102               called_strike  ...   
+346248  Merrifield, Whit  593160   677053                        ball  ...   
+346249  De La Cruz, Elly  682829   664854             swinging_strike  ...   
+
+        fld_score post_away_score post_home_score post_bat_score  \
+0               0               4               0              4   
+1               0               4               0              4   
+2               0               4               0              4   
+3               2               2               5              5   
+4               0               4               0              4   
+...           ...             ...             ...            ...   
+346245          2               3               2              3   
+346246          3               3               3              3   
+346247          1               8               1              8   
+346248          6               6               5              5   
+346249          2               0               2              0   
+
+       post_fld_score if_fielding_alignment of_fielding_alignment spin_axis  \
+0                   0         Infield shade              Standard     239.0   
+1                   0              Standard              Standard     253.0   
+2                   0              Standard              Standard     238.0   
+3                   2         Infield shade              Standard     234.0   
+4                   0              Standard              Standard     238.0   
+...               ...                   ...                   ...       ...   
+346245              2              Standard              Standard     144.0   
+346246              3              Standard              Standard     200.0   
+346247              1         Infield shade              Standard      47.0   
+346248              6              Standard              Standard     139.0   
+346249              2         Infield shade              Standard     206.0   
+
+       delta_home_win_exp  delta_run_exp  
+0                  -0.006          0.388  
+1                   0.000         -0.045  
+2                   0.000         -0.042  
+3                   0.009          0.082  
+4                   0.008         -0.215  
+...                   ...            ...  
+346245              0.000         -0.067  
+346246              0.000          0.057  
+346247              0.000         -0.033  
+346248              0.000          0.032  
+346249              0.000         -0.033  
+
+[345954 rows x 66 columns]</code></pre>
+</div>
+</div>
+<p>Ensuring that the possible home and away teams align:</p>
+<div id="c6c6c724" class="cell" data-execution_count="13">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>unique_home_teams <span class="op">=</span> df[<span class="st">'home_team'</span>].unique()</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Unique values in 'home_team':"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(unique_home_teams)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Unique values in 'home_team':
+['SEA' 'LAD' 'OAK' 'AZ' 'MIA' 'CWS' 'TB' 'CHC' 'MIL' 'HOU' 'SD' 'PHI'
+ 'BAL' 'WSH' 'MIN' 'KC' 'NYM' 'STL' 'SF' 'CIN' 'ATL' 'NYY' 'TEX' 'PIT'
+ 'DET' 'LAA' 'COL' 'TOR' 'CLE' 'BOS']</code></pre>
+</div>
+</div>
+<div id="fe3d24ee" class="cell" data-execution_count="14">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>unique_away_teams <span class="op">=</span> df[<span class="st">'away_team'</span>].unique()</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Unique values in 'away_team':"</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(unique_away_teams)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Unique values in 'away_team':
+['CLE' 'SF' 'BOS' 'NYY' 'LAA' 'ATL' 'TEX' 'COL' 'MIN' 'TOR' 'STL' 'CIN'
+ 'KC' 'PIT' 'CWS' 'DET' 'MIA' 'SD' 'NYM' 'AZ' 'HOU' 'BAL' 'PHI' 'SEA'
+ 'OAK' 'TB' 'LAD' 'CHC' 'MIL' 'WSH']</code></pre>
+</div>
+</div>
+<p>Removing any remaining rows with missing data:</p>
+<div id="d726288a" class="cell" data-execution_count="15">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>clean_df <span class="op">=</span> df.dropna()</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clean_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       pitch_type   game_date  release_speed  release_pos_x  release_pos_z  \
+0              FF  2024-04-02           95.0          -2.01           5.22   
+1              CH  2024-04-02           88.5          -2.09           4.95   
+2              SI  2024-04-02           95.0          -2.02           5.12   
+3              SI  2024-04-02           90.7          -1.26           5.13   
+4              FF  2024-04-02           95.4          -1.95           5.12   
+...           ...         ...            ...            ...            ...   
+346245         SL  2024-06-30           85.9           1.63           5.68   
+346246         SL  2024-06-30           89.9          -1.12           6.41   
+346247         CU  2024-06-30           73.7          -2.44           5.80   
+346248         FF  2024-06-30           94.1           2.97           5.97   
+346249         FF  2024-06-30           99.8          -0.40           6.01   
+
+             player_name  batter  pitcher     events      description  ...  \
+0        Rocchio, Brayan  677587   622491     single    hit_into_play  ...   
+1        Rocchio, Brayan  677587   622491                        foul  ...   
+2        Rocchio, Brayan  677587   622491               called_strike  ...   
+3         Ohtani, Shohei  660271   657277       walk             ball  ...   
+4         Hedges, Austin  595978   622491  strikeout         foul_tip  ...   
+...                  ...     ...      ...        ...              ...  ...   
+346245        Cave, Jake  595909   694363               called_strike  ...   
+346246     Jiménez, Eloy  650391   641755                blocked_ball  ...   
+346247         Rice, Ben  700250   670102               called_strike  ...   
+346248  Merrifield, Whit  593160   677053                        ball  ...   
+346249  De La Cruz, Elly  682829   664854             swinging_strike  ...   
+
+        fld_score post_away_score post_home_score post_bat_score  \
+0               0               4               0              4   
+1               0               4               0              4   
+2               0               4               0              4   
+3               2               2               5              5   
+4               0               4               0              4   
+...           ...             ...             ...            ...   
+346245          2               3               2              3   
+346246          3               3               3              3   
+346247          1               8               1              8   
+346248          6               6               5              5   
+346249          2               0               2              0   
+
+       post_fld_score if_fielding_alignment of_fielding_alignment spin_axis  \
+0                   0         Infield shade              Standard     239.0   
+1                   0              Standard              Standard     253.0   
+2                   0              Standard              Standard     238.0   
+3                   2         Infield shade              Standard     234.0   
+4                   0              Standard              Standard     238.0   
+...               ...                   ...                   ...       ...   
+346245              2              Standard              Standard     144.0   
+346246              3              Standard              Standard     200.0   
+346247              1         Infield shade              Standard      47.0   
+346248              6              Standard              Standard     139.0   
+346249              2         Infield shade              Standard     206.0   
+
+       delta_home_win_exp  delta_run_exp  
+0                  -0.006          0.388  
+1                   0.000         -0.045  
+2                   0.000         -0.042  
+3                   0.009          0.082  
+4                   0.008         -0.215  
+...                   ...            ...  
+346245              0.000         -0.067  
+346246              0.000          0.057  
+346247              0.000         -0.033  
+346248              0.000          0.032  
+346249              0.000         -0.033  
+
+[343602 rows x 66 columns]</code></pre>
+</div>
+</div>
+</section>
+<section id="data-exploration" class="level2">
+<h2 class="anchored" data-anchor-id="data-exploration">Data Exploration</h2>
+<p>Printing the unique categories and events:</p>
+<div id="f51ca4db" class="cell" data-execution_count="16">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>unique_category <span class="op">=</span> clean_df[<span class="st">'category'</span>].unique()</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Unique values in 'category':"</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(unique_category)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Unique values in 'category':
+['X' 'S' 'B']</code></pre>
+</div>
+</div>
+<div id="63354f93" class="cell" data-execution_count="17">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>unique_events <span class="op">=</span> clean_df[<span class="st">'events'</span>].unique()</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Unique values in 'events':"</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(unique_events)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Unique values in 'events':
+['single' '' 'walk' 'strikeout' 'field_out' 'home_run' 'force_out'
+ 'double' 'field_error' 'grounded_into_double_play' 'hit_by_pitch'
+ 'catcher_interf' 'triple' 'sac_fly' 'double_play' 'sac_bunt'
+ 'fielders_choice' 'caught_stealing_home' 'fielders_choice_out'
+ 'caught_stealing_2b' 'strikeout_double_play' 'stolen_base_2b'
+ 'caught_stealing_3b' 'other_out' 'pickoff_caught_stealing_home'
+ 'pickoff_caught_stealing_3b' 'pickoff_3b' 'sac_fly_double_play'
+ 'pickoff_1b' 'triple_play']</code></pre>
+</div>
+</div>
+<p>Designating the unique categories and events as either good or bad based on the pitcher’s perspective, creating the binary ‘pitch_outcome’ variable:</p>
+<div id="23c28a20" class="cell" data-execution_count="18">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>bad_events <span class="op">=</span> [<span class="st">'single'</span>, <span class="st">'walk'</span>, <span class="st">'home_run'</span>, <span class="st">'double'</span>, <span class="st">'field_error'</span>, </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">'hit_by_pitch'</span>, <span class="st">'catcher_interf'</span>, <span class="st">'triple'</span>, <span class="st">'sac_fly'</span>, </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">'sac_bunt'</span>, <span class="st">'stolen_base_2b'</span>]</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>good_events <span class="op">=</span> [<span class="st">'strikeout'</span>, <span class="st">'field_out'</span>, <span class="st">'force_out'</span>, </span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>               <span class="st">'grounded_into_double_play'</span>, <span class="st">'double_play'</span>, <span class="st">'fielders_choice'</span>,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>               <span class="st">'caught_stealing_home'</span>, <span class="st">'fielders_choice_out'</span>, </span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>               <span class="st">'caught_stealing_2b'</span>, <span class="st">'strikeout_double_play'</span>, </span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>               <span class="st">'caught_stealing_3b'</span>, <span class="st">'other_out'</span>, </span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>               <span class="st">'pickoff_caught_stealing_home'</span>, <span class="st">'pickoff_caught_stealing_3b'</span>,</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>               <span class="st">'pickoff_3b'</span>, <span class="st">'sac_fly_double_play'</span>, <span class="st">'pickoff_1b'</span>, <span class="st">'triple_play'</span>]</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> classify_pitch_outcome(row):</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row[<span class="st">'events'</span>] <span class="kw">in</span> bad_events <span class="kw">or</span> row[<span class="st">'category'</span>] <span class="op">==</span> <span class="st">'B'</span>:</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">'0'</span></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> row[<span class="st">'events'</span>] <span class="kw">in</span> good_events <span class="kw">or</span> row[<span class="st">'category'</span>] <span class="op">==</span> <span class="st">'S'</span>:</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">'1'</span></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">'None'</span></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'pitch_outcome'</span>] <span class="op">=</span> clean_df.<span class="bu">apply</span>(classify_pitch_outcome, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'pitch_outcome'</span>].head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\18607\AppData\Local\Temp\ipykernel_12672\1514293199.py:20: SettingWithCopyWarning:
+
+
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>0    0
+1    1
+2    1
+3    0
+4    1
+Name: pitch_outcome, dtype: object</code></pre>
+</div>
+</div>
+<p>Removing pitch types that are rare/unuseful for the pitch outcome analysis:</p>
+<div id="af12579c" class="cell" data-execution_count="19">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>clean_df <span class="op">=</span> clean_df.drop(</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    clean_df[clean_df[<span class="st">'pitch_type'</span>].isin([<span class="st">'PO'</span>, <span class="st">'EP'</span>, <span class="st">'FA'</span>, <span class="st">'CS'</span>])].index</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clean_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       pitch_type   game_date  release_speed  release_pos_x  release_pos_z  \
+0              FF  2024-04-02           95.0          -2.01           5.22   
+1              CH  2024-04-02           88.5          -2.09           4.95   
+2              SI  2024-04-02           95.0          -2.02           5.12   
+3              SI  2024-04-02           90.7          -1.26           5.13   
+4              FF  2024-04-02           95.4          -1.95           5.12   
+...           ...         ...            ...            ...            ...   
+346245         SL  2024-06-30           85.9           1.63           5.68   
+346246         SL  2024-06-30           89.9          -1.12           6.41   
+346247         CU  2024-06-30           73.7          -2.44           5.80   
+346248         FF  2024-06-30           94.1           2.97           5.97   
+346249         FF  2024-06-30           99.8          -0.40           6.01   
+
+             player_name  batter  pitcher     events      description  ...  \
+0        Rocchio, Brayan  677587   622491     single    hit_into_play  ...   
+1        Rocchio, Brayan  677587   622491                        foul  ...   
+2        Rocchio, Brayan  677587   622491               called_strike  ...   
+3         Ohtani, Shohei  660271   657277       walk             ball  ...   
+4         Hedges, Austin  595978   622491  strikeout         foul_tip  ...   
+...                  ...     ...      ...        ...              ...  ...   
+346245        Cave, Jake  595909   694363               called_strike  ...   
+346246     Jiménez, Eloy  650391   641755                blocked_ball  ...   
+346247         Rice, Ben  700250   670102               called_strike  ...   
+346248  Merrifield, Whit  593160   677053                        ball  ...   
+346249  De La Cruz, Elly  682829   664854             swinging_strike  ...   
+
+        post_away_score post_home_score post_bat_score post_fld_score  \
+0                     4               0              4              0   
+1                     4               0              4              0   
+2                     4               0              4              0   
+3                     2               5              5              2   
+4                     4               0              4              0   
+...                 ...             ...            ...            ...   
+346245                3               2              3              2   
+346246                3               3              3              3   
+346247                8               1              8              1   
+346248                6               5              5              6   
+346249                0               2              0              2   
+
+       if_fielding_alignment of_fielding_alignment spin_axis  \
+0              Infield shade              Standard     239.0   
+1                   Standard              Standard     253.0   
+2                   Standard              Standard     238.0   
+3              Infield shade              Standard     234.0   
+4                   Standard              Standard     238.0   
+...                      ...                   ...       ...   
+346245              Standard              Standard     144.0   
+346246              Standard              Standard     200.0   
+346247         Infield shade              Standard      47.0   
+346248              Standard              Standard     139.0   
+346249         Infield shade              Standard     206.0   
+
+       delta_home_win_exp delta_run_exp  pitch_outcome  
+0                  -0.006         0.388              0  
+1                   0.000        -0.045              1  
+2                   0.000        -0.042              1  
+3                   0.009         0.082              0  
+4                   0.008        -0.215              1  
+...                   ...           ...            ...  
+346245              0.000        -0.067              1  
+346246              0.000         0.057              0  
+346247              0.000        -0.033              1  
+346248              0.000         0.032              0  
+346249              0.000        -0.033              1  
+
+[343397 rows x 67 columns]</code></pre>
+</div>
+</div>
+<div id="3254ed1b" class="cell" data-execution_count="20">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>outcome_counts <span class="op">=</span> clean_df[<span class="st">'pitch_outcome'</span>].value_counts()</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(outcome_counts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>pitch_outcome
+1    200320
+0    143077
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+<p>Engineering the ‘pitch_group’ variable where ‘pitch_types’ are sorted based on goal:</p>
+<div id="be0059a6" class="cell" data-execution_count="21">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>pitch_group_mapping <span class="op">=</span> {</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'FC'</span>: <span class="st">'fastball'</span>, <span class="st">'FF'</span>: <span class="st">'fastball'</span>, <span class="st">'FS'</span>: <span class="st">'fastball'</span>, <span class="st">'SI'</span>: <span class="st">'fastball'</span>,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'FO'</span>: <span class="st">'fastball'</span>, <span class="st">'SL'</span>: <span class="st">'breaking'</span>, <span class="st">'ST'</span>: <span class="st">'breaking'</span>, <span class="st">'CU'</span>: <span class="st">'breaking'</span>,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SC'</span>: <span class="st">'breaking'</span>, <span class="st">'KC'</span>: <span class="st">'breaking'</span>, <span class="st">'SV'</span>: <span class="st">'breaking'</span>, <span class="st">'CH'</span>: <span class="st">'offspeed'</span>,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'KN'</span>: <span class="st">'knuckle'</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'pitch_group'</span>] <span class="op">=</span> clean_df[<span class="st">'pitch_type'</span>].<span class="bu">apply</span>(</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> x: pitch_group_mapping.get(x, <span class="st">'unknown'</span>)</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Creating a violin plot that charts velocity based on pitch group:</p>
+<div id="ec9933a7" class="cell" data-execution_count="22">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>clean_filtered_df <span class="op">=</span> clean_df[clean_df[<span class="st">'pitch_group'</span>] <span class="op">!=</span> <span class="st">'unknown'</span>]</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> [<span class="st">'#ADD8E6'</span>, <span class="st">'#0096FF'</span>, <span class="st">'#5D3FD3'</span>, <span class="st">'#6495ED'</span>]</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>violin_plot <span class="op">=</span> (</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>    ggplot(clean_filtered_df, aes(x<span class="op">=</span><span class="st">'pitch_group'</span>, y<span class="op">=</span><span class="st">'release_speed'</span>, fill<span class="op">=</span><span class="st">'pitch_group'</span>))</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_violin(show_legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_fill_manual(values<span class="op">=</span>colors)</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(title<span class="op">=</span><span class="st">'Pitch Group vs Velocity'</span>, x<span class="op">=</span><span class="st">'Pitch Group'</span>, y<span class="op">=</span><span class="st">'Velocity (mph)'</span>)</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_bw()</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>violin_plot.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_files/figure-html/cell-23-output-1.png" width="640" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Demonstrating what the pitch zone looks like:</p>
+<div id="dd1992e2" class="cell" data-execution_count="23">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">3</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">8</span>), gridspec_kw<span class="op">=</span>{<span class="st">'wspace'</span>: <span class="dv">0</span>, <span class="st">'hspace'</span>: <span class="dv">0</span>})</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"Strike Zone From the Catcher's Perspective"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">0</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'1'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">1</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'2'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>, <span class="dv">2</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'3'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">0</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'4'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">1</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'5'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>, <span class="dv">2</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'6'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">0</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'7'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">1</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'8'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">2</span>, <span class="dv">2</span>].text(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="st">'9'</span>, fontsize<span class="op">=</span><span class="dv">20</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>)</span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axs.flat:</span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>    ax.set_xticks([])</span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>    ax.set_yticks([])</span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axs.flat:</span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _, spine <span class="kw">in</span> ax.spines.items():</span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>        spine.set_visible(<span class="va">True</span>)  </span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a>        spine.set_linewidth(<span class="dv">1</span>)   </span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a>        spine.set_edgecolor(<span class="st">'black'</span>) </span>
+<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-29"><a href="#cb42-29" aria-hidden="true" tabindex="-1"></a>plt.tight_layout(pad<span class="op">=</span><span class="dv">0</span>)  </span>
+<span id="cb42-30"><a href="#cb42-30" aria-hidden="true" tabindex="-1"></a>plt.subplots_adjust(top<span class="op">=</span><span class="fl">0.9</span>)  </span>
+<span id="cb42-31"><a href="#cb42-31" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_files/figure-html/cell-24-output-1.png" width="595" height="772" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Heat map showing frequency of pitch per zone for left-handed and right-handed pitchers:</p>
+<div id="7c1ee632" class="cell" data-execution_count="24">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> assign_x_coord(row):</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">7</span>]:</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">8</span>]:</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">2</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">9</span>]:</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">3</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> assign_y_coord(row):</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]:</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">3</span></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]:</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">2</span></span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row.zone <span class="kw">in</span> [<span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>]:</span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span></span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>clean_df_zones <span class="op">=</span> clean_df.copy().loc[df.zone <span class="op">&lt;=</span> <span class="dv">9</span>]</span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>clean_df_zones[<span class="st">'zone_x'</span>] <span class="op">=</span> clean_df_zones.<span class="bu">apply</span>(assign_x_coord, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a>clean_df_zones[<span class="st">'zone_y'</span>] <span class="op">=</span> clean_df_zones.<span class="bu">apply</span>(assign_y_coord, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>clean_df_lefties <span class="op">=</span> clean_df_zones[clean_df_zones[<span class="st">'p_throws'</span>] <span class="op">==</span> <span class="st">'L'</span>]</span>
+<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a>clean_df_righties <span class="op">=</span> clean_df_zones[clean_df_zones[<span class="st">'p_throws'</span>] <span class="op">==</span> <span class="st">'R'</span>]</span>
+<span id="cb43-24"><a href="#cb43-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb43-26"><a href="#cb43-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-27"><a href="#cb43-27" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>) </span>
+<span id="cb43-28"><a href="#cb43-28" aria-hidden="true" tabindex="-1"></a>plt.hist2d(</span>
+<span id="cb43-29"><a href="#cb43-29" aria-hidden="true" tabindex="-1"></a>    clean_df_lefties.zone_x, clean_df_lefties.zone_y, bins<span class="op">=</span><span class="dv">3</span>, cmap<span class="op">=</span><span class="st">'Blues'</span>,</span>
+<span id="cb43-30"><a href="#cb43-30" aria-hidden="true" tabindex="-1"></a>    vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">7500</span></span>
+<span id="cb43-31"><a href="#cb43-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-32"><a href="#cb43-32" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Heat Map per Zone (Lefties)'</span>)</span>
+<span id="cb43-33"><a href="#cb43-33" aria-hidden="true" tabindex="-1"></a>plt.gca().get_xaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb43-34"><a href="#cb43-34" aria-hidden="true" tabindex="-1"></a>plt.gca().get_yaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb43-35"><a href="#cb43-35" aria-hidden="true" tabindex="-1"></a>cb_left <span class="op">=</span> plt.colorbar()</span>
+<span id="cb43-36"><a href="#cb43-36" aria-hidden="true" tabindex="-1"></a>cb_left.set_label(<span class="st">'Counts in Bin'</span>)</span>
+<span id="cb43-37"><a href="#cb43-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-38"><a href="#cb43-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-39"><a href="#cb43-39" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>) </span>
+<span id="cb43-40"><a href="#cb43-40" aria-hidden="true" tabindex="-1"></a>plt.hist2d(</span>
+<span id="cb43-41"><a href="#cb43-41" aria-hidden="true" tabindex="-1"></a>    clean_df_righties.zone_x, clean_df_righties.zone_y, bins<span class="op">=</span><span class="dv">3</span>, cmap<span class="op">=</span><span class="st">'Greens'</span>, </span>
+<span id="cb43-42"><a href="#cb43-42" aria-hidden="true" tabindex="-1"></a>    vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">18000</span></span>
+<span id="cb43-43"><a href="#cb43-43" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-44"><a href="#cb43-44" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Heat Map per Zone (Righties)'</span>)</span>
+<span id="cb43-45"><a href="#cb43-45" aria-hidden="true" tabindex="-1"></a>plt.gca().get_xaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb43-46"><a href="#cb43-46" aria-hidden="true" tabindex="-1"></a>plt.gca().get_yaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb43-47"><a href="#cb43-47" aria-hidden="true" tabindex="-1"></a>cb_right <span class="op">=</span> plt.colorbar()</span>
+<span id="cb43-48"><a href="#cb43-48" aria-hidden="true" tabindex="-1"></a>cb_right.set_label(<span class="st">'Counts in Bin'</span>)</span>
+<span id="cb43-49"><a href="#cb43-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-50"><a href="#cb43-50" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb43-51"><a href="#cb43-51" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_files/figure-html/cell-25-output-1.png" width="1128" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Scatter plot showing vertical and horizontal break for right-handed and left-handed pitchers, color-coded by pitch group:</p>
+<div id="1958513f" class="cell" data-execution_count="25">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'pfx_x'</span>] <span class="op">=</span> clean_df[<span class="st">'pfx_x'</span>] <span class="op">*</span> <span class="dv">12</span> </span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'pfx_z'</span>] <span class="op">=</span> clean_df[<span class="st">'pfx_z'</span>] <span class="op">*</span> <span class="dv">12</span>  </span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>(ggplot(clean_df, aes(x<span class="op">=</span><span class="st">'pfx_x'</span>, y<span class="op">=</span><span class="st">'pfx_z'</span>, color<span class="op">=</span><span class="st">'pitch_group'</span>)) <span class="op">+</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    geom_point() <span class="op">+</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    labs(title<span class="op">=</span><span class="st">'Vertical and Horizontal Break of Pitches'</span>,</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>         x<span class="op">=</span><span class="st">'Horizontal Break (inches)'</span>,</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>         y<span class="op">=</span><span class="st">'Vertical Break (inches)'</span>,</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>         color<span class="op">=</span><span class="st">'Pitch Group'</span>) <span class="op">+</span></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>    coord_fixed(ratio<span class="op">=</span><span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>    theme(figure_size<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>), legend_position<span class="op">=</span><span class="st">'bottom'</span>) <span class="op">+</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>    facet_wrap(<span class="st">'~p_throws'</span>)  </span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_files/figure-html/cell-26-output-1.png" width="700" height="500" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Bar plot showing average spin rate for each pitch group:</p>
+<div id="2a39d559" class="cell" data-execution_count="26">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>avg_spin_rate_by_pitch_group <span class="op">=</span> clean_filtered_df.groupby(<span class="st">'pitch_group'</span>)[</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'release_spin_rate'</span>].mean().reset_index()</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>(ggplot(avg_spin_rate_by_pitch_group, </span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>        aes(x<span class="op">=</span><span class="st">'pitch_group'</span>, y<span class="op">=</span><span class="st">'release_spin_rate'</span>, fill<span class="op">=</span><span class="st">'pitch_group'</span>))</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a> <span class="op">+</span> geom_bar(stat<span class="op">=</span><span class="st">'identity'</span>, show_legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a> <span class="op">+</span> labs(</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>     title<span class="op">=</span><span class="st">'Average Release Spin Rate by Pitch Group'</span>,</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>     x<span class="op">=</span><span class="st">'Pitch Type'</span>,</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>     y<span class="op">=</span><span class="st">'Average Release Spin Rate (RPM)'</span></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>   )</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a> <span class="op">+</span> theme_minimal()</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_files/figure-html/cell-27-output-1.png" width="640" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Determining whether data is normally distributed:</p>
+<div id="5bbde41c" class="cell" data-execution_count="27">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> shapiro</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>numeric_columns <span class="op">=</span> clean_df.select_dtypes(include<span class="op">=</span>[<span class="st">'float64'</span>, <span class="st">'int64'</span>]).columns</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> column <span class="kw">in</span> numeric_columns:</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    stat, p_value <span class="op">=</span> shapiro(clean_df[column])</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Shapiro-Wilk test for </span><span class="sc">{</span>column<span class="sc">}</span><span class="ss">: Statistic=</span><span class="sc">{</span>stat<span class="sc">}</span><span class="ss">, P-value=</span><span class="sc">{</span>p_value<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> p_value <span class="op">&lt;</span> <span class="fl">0.05</span>:</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>column<span class="sc">}</span><span class="ss"> is NOT normally distributed (reject H0)."</span>)</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>column<span class="sc">}</span><span class="ss"> is normally distributed (fail to reject H0)."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\18607\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\stats\_axis_nan_policy.py:573: UserWarning: scipy.stats.shapiro: For N &gt; 5000, computed p-value may not be accurate. Current N is 343397.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Shapiro-Wilk test for release_speed: Statistic=0.9701733737511701, P-value=8.663200591804365e-103
+release_speed is NOT normally distributed (reject H0).
+Shapiro-Wilk test for release_pos_x: Statistic=0.8762952538548088, P-value=4.962795546422406e-144
+release_pos_x is NOT normally distributed (reject H0).
+Shapiro-Wilk test for release_pos_z: Statistic=0.9144160504216262, P-value=1.1294021103232072e-132
+release_pos_z is NOT normally distributed (reject H0).
+Shapiro-Wilk test for zone: Statistic=0.8966125285483152, P-value=1.9310570216949392e-138
+zone is NOT normally distributed (reject H0).
+Shapiro-Wilk test for pfx_x: Statistic=0.9619261837407397, P-value=2.294666647703834e-109
+pfx_x is NOT normally distributed (reject H0).
+Shapiro-Wilk test for pfx_z: Statistic=0.9683092419645413, P-value=2.1076030985318253e-104
+pfx_z is NOT normally distributed (reject H0).
+Shapiro-Wilk test for plate_x: Statistic=0.9996202228285507, P-value=3.512993589748462e-20
+plate_x is NOT normally distributed (reject H0).
+Shapiro-Wilk test for plate_z: Statistic=0.9991295918924639, P-value=8.510742439497825e-31
+plate_z is NOT normally distributed (reject H0).
+Shapiro-Wilk test for vx0: Statistic=0.936654681555992, P-value=9.511215345338106e-124
+vx0 is NOT normally distributed (reject H0).
+Shapiro-Wilk test for vy0: Statistic=0.9702744542901001, P-value=1.0657903139189927e-102
+vy0 is NOT normally distributed (reject H0).
+Shapiro-Wilk test for vz0: Statistic=0.9955082712499248, P-value=7.9542941062316125e-59
+vz0 is NOT normally distributed (reject H0).
+Shapiro-Wilk test for ax: Statistic=0.9735965124304796, P-value=1.3939490407933937e-99
+ax is NOT normally distributed (reject H0).
+Shapiro-Wilk test for ay: Statistic=0.9941126796590561, P-value=2.405069053473543e-64
+ay is NOT normally distributed (reject H0).
+Shapiro-Wilk test for az: Statistic=0.9794047505775959, P-value=3.3029061798519583e-93
+az is NOT normally distributed (reject H0).
+Shapiro-Wilk test for sz_top: Statistic=0.9978745614544096, P-value=6.926248981348034e-45
+sz_top is NOT normally distributed (reject H0).
+Shapiro-Wilk test for sz_bot: Statistic=0.9978675745365625, P-value=6.075793937482741e-45
+sz_bot is NOT normally distributed (reject H0).
+Shapiro-Wilk test for effective_speed: Statistic=0.9734425890658718, P-value=9.829350452994871e-100
+effective_speed is NOT normally distributed (reject H0).
+Shapiro-Wilk test for release_spin_rate: Statistic=0.9359555645846115, P-value=4.551938588479931e-124
+release_spin_rate is NOT normally distributed (reject H0).
+Shapiro-Wilk test for release_extension: Statistic=0.9947531897347226, P-value=5.779806431006556e-62
+release_extension is NOT normally distributed (reject H0).
+Shapiro-Wilk test for release_pos_y: Statistic=0.9986522811556826, P-value=2.3739250167464235e-37
+release_pos_y is NOT normally distributed (reject H0).
+Shapiro-Wilk test for spin_axis: Statistic=0.9604286698530877, P-value=2.006343423164368e-110
+spin_axis is NOT normally distributed (reject H0).
+Shapiro-Wilk test for delta_home_win_exp: Statistic=0.44492758722732173, P-value=3.3669354456939704e-195
+delta_home_win_exp is NOT normally distributed (reject H0).
+Shapiro-Wilk test for delta_run_exp: Statistic=0.6627796140180917, P-value=2.4245423639969912e-177
+delta_run_exp is NOT normally distributed (reject H0).</code></pre>
+</div>
+</div>
+<p>Because data is non-parametric, use Kruskal-Wallis test to determine if there is a statistically significant difference in velocity based on pitch group:</p>
+<div id="bc101d1c" class="cell" data-execution_count="28">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> kruskal</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>pitch_groups <span class="op">=</span> clean_df[<span class="st">'pitch_group'</span>].unique()</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>grouped_data <span class="op">=</span> [</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    clean_df[clean_df[<span class="st">'pitch_group'</span>] <span class="op">==</span> group][<span class="st">'release_speed'</span>].dropna() </span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> group <span class="kw">in</span> pitch_groups</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>stat, p_value <span class="op">=</span> kruskal(<span class="op">*</span>grouped_data)</span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Kruskal-Wallis test result: Statistic=</span><span class="sc">{</span>stat<span class="sc">}</span><span class="ss">, P-value=</span><span class="sc">{</span>p_value<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> p_value <span class="op">&lt;</span> <span class="fl">0.05</span>:</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"There is a significant difference in pitch speeds between pitch groups "</span></span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>          <span class="st">"(reject H0)."</span>)</span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"There is no significant difference in pitch speeds between pitch groups "</span></span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>          <span class="st">"(fail to reject H0)."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Kruskal-Wallis test result: Statistic=210487.8574218729, P-value=0.0
+There is a significant difference in pitch speeds between pitch groups (reject H0).</code></pre>
+</div>
+</div>
+<p>Kruskal-Wallis test to see if there is a statistically significant difference in horizontal and vertical break based on pitch group:</p>
+<div id="115bb46d" class="cell" data-execution_count="29">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>grouped_horizontal <span class="op">=</span> [</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>    clean_df[clean_df[<span class="st">'pitch_group'</span>] <span class="op">==</span> group][<span class="st">'pfx_x'</span>].dropna() </span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> group <span class="kw">in</span> pitch_groups</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>grouped_vertical <span class="op">=</span> [</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>    clean_df[clean_df[<span class="st">'pitch_group'</span>] <span class="op">==</span> group][<span class="st">'pfx_z'</span>].dropna() </span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> group <span class="kw">in</span> pitch_groups</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>stat_x, p_value_x <span class="op">=</span> kruskal(<span class="op">*</span>grouped_horizontal)</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Kruskal-Wallis test for horizontal break: Statistic=</span><span class="sc">{</span>stat_x<span class="sc">}</span><span class="ss">, "</span></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"P-value=</span><span class="sc">{</span>p_value_x<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>stat_z, p_value_z <span class="op">=</span> kruskal(<span class="op">*</span>grouped_vertical)</span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Kruskal-Wallis test for vertical break: Statistic=</span><span class="sc">{</span>stat_z<span class="sc">}</span><span class="ss">, P-value=</span><span class="sc">{</span>p_value_z<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> p_value_x <span class="op">&lt;</span> <span class="fl">0.05</span>:</span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"There is a significant difference in horizontal breaks between pitch groups "</span></span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>          <span class="st">"(reject H0)."</span>)</span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"There is no significant difference in horizontal breaks between pitch groups "</span></span>
+<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a>          <span class="st">"(fail to reject H0)."</span>)</span>
+<span id="cb51-24"><a href="#cb51-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-25"><a href="#cb51-25" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> p_value_z <span class="op">&lt;</span> <span class="fl">0.05</span>:</span>
+<span id="cb51-26"><a href="#cb51-26" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"There is a significant difference in vertical breaks between pitch groups "</span></span>
+<span id="cb51-27"><a href="#cb51-27" aria-hidden="true" tabindex="-1"></a>          <span class="st">"(reject H0)."</span>)</span>
+<span id="cb51-28"><a href="#cb51-28" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb51-29"><a href="#cb51-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"There is no significant difference in vertical breaks between pitch groups "</span></span>
+<span id="cb51-30"><a href="#cb51-30" aria-hidden="true" tabindex="-1"></a>          <span class="st">"(fail to reject H0)."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Kruskal-Wallis test for horizontal break: Statistic=39725.47250271622, P-value=0.0
+Kruskal-Wallis test for vertical break: Statistic=172196.66805453913, P-value=0.0
+There is a significant difference in horizontal breaks between pitch groups (reject H0).
+There is a significant difference in vertical breaks between pitch groups (reject H0).</code></pre>
+</div>
+</div>
+<p>Kruskal-Wallis test to determine if there is a statistically significant difference in spin rate based on pitch group:</p>
+<div id="050f4478" class="cell" data-execution_count="30">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>grouped_spin_rate <span class="op">=</span> [</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>    clean_df[clean_df[<span class="st">'pitch_group'</span>] <span class="op">==</span> group][<span class="st">'release_spin_rate'</span>].dropna() </span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> group <span class="kw">in</span> pitch_groups</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>stat, p_value <span class="op">=</span> kruskal(<span class="op">*</span>grouped_spin_rate)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Kruskal-Wallis test result for release spin rate: Statistic=</span><span class="sc">{</span>stat<span class="sc">}</span><span class="ss">, "</span></span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"P-value=</span><span class="sc">{</span>p_value<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> p_value <span class="op">&lt;</span> <span class="fl">0.05</span>:</span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"There is a significant difference in release spin rates between pitch "</span></span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>          <span class="st">"groups (reject H0)."</span>)</span>
+<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"There is no significant difference in release spin rates between pitch "</span></span>
+<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a>          <span class="st">"groups (fail to reject H0)."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Kruskal-Wallis test result for release spin rate: Statistic=108414.15977712892, P-value=0.0
+There is a significant difference in release spin rates between pitch groups (reject H0).</code></pre>
+</div>
+</div>
+</section>
+<section id="data-analysis" class="level1">
+<h1>Data Analysis</h1>
+<p>Determine necessary number of clusters to limit inertia while standardizing the data to prepare for k-means clustering:</p>
+<div id="239dc212" class="cell" data-execution_count="31">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>clean_df <span class="op">=</span> clean_df[clean_df[<span class="st">'pitch_group'</span>] <span class="op">==</span> <span class="st">'fastball'</span>]</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> clean_df[[<span class="st">'release_speed'</span>, <span class="st">'pfx_x'</span>, <span class="st">'pfx_z'</span>]]</span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>scaled_features <span class="op">=</span> scaler.fit_transform(features)</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>inertia <span class="op">=</span> []</span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>k_range <span class="op">=</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">16</span>)  </span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> k_range:</span>
+<span id="cb55-15"><a href="#cb55-15" aria-hidden="true" tabindex="-1"></a>    kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>k, random_state<span class="op">=</span><span class="dv">1918</span>)</span>
+<span id="cb55-16"><a href="#cb55-16" aria-hidden="true" tabindex="-1"></a>    kmeans.fit(scaled_features)</span>
+<span id="cb55-17"><a href="#cb55-17" aria-hidden="true" tabindex="-1"></a>    inertia.append(kmeans.inertia_)</span>
+<span id="cb55-18"><a href="#cb55-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-19"><a href="#cb55-19" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb55-20"><a href="#cb55-20" aria-hidden="true" tabindex="-1"></a>plt.plot(k_range, inertia, marker<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb55-21"><a href="#cb55-21" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Elbow Method for Optimal Number of Clusters'</span>)</span>
+<span id="cb55-22"><a href="#cb55-22" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Number of Clusters'</span>)</span>
+<span id="cb55-23"><a href="#cb55-23" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Inertia'</span>)</span>
+<span id="cb55-24"><a href="#cb55-24" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_files/figure-html/cell-32-output-1.png" width="693" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Determine the variance explained by each PCA component:</p>
+<div id="14f62710" class="cell" data-execution_count="32">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>pca <span class="op">=</span> PCA(n_components<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>pca_components <span class="op">=</span> pca.fit_transform(features)</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Explained variance ratio by each component:"</span>)</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pca.explained_variance_ratio_)</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Principal components (directions):"</span>)</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pca.components_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Explained variance ratio by each component:
+[0.69114799 0.25398751]
+
+Principal components (directions):
+[[-0.05013017  0.99642904  0.06794214]
+ [ 0.35713866 -0.0456452   0.93293542]]</code></pre>
+</div>
+</div>
+<p>Visualization of 5 created clusters based on elbow method:</p>
+<div id="0f9f965e" class="cell" data-execution_count="33">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span><span class="dv">5</span>, random_state<span class="op">=</span><span class="dv">1918</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'cluster'</span>] <span class="op">=</span> kmeans.fit_predict(pca_components)</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>plt.scatter(pca_components[:, <span class="dv">0</span>], pca_components[:, <span class="dv">1</span>], </span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>            c<span class="op">=</span>clean_df[<span class="st">'cluster'</span>], cmap<span class="op">=</span><span class="st">'viridis'</span>, </span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>            s<span class="op">=</span><span class="dv">50</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'KMeans Clustering - PCA Projection (2D)'</span>)</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'PCA Component 1'</span>)</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'PCA Component 2'</span>)</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>plt.colorbar(label<span class="op">=</span><span class="st">'Cluster'</span>)</span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\18607\AppData\Local\Temp\ipykernel_12672\2566601178.py:2: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_files/figure-html/cell-34-output-2.png" width="652" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Using k-means clustering to group pitchers based on velocity, horizontal break, and vertical break tendencies, then ranking those clusters to create deciles:</p>
+<p>Those rankings are then used to determine pitchers prioritizing movement with the most pitches in the top 30% for vertical and horizontal break but in the bottom 20% for velocity:</p>
+<div id="f7d24843" class="cell" data-execution_count="34">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> clean_df[[<span class="st">'release_speed'</span>, <span class="st">'pfx_x'</span>, <span class="st">'pfx_z'</span>]]</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> pd.get_dummies(features, drop_first<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>scaled_features <span class="op">=</span> scaler.fit_transform(features)</span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a>pca <span class="op">=</span> PCA(n_components<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb60-14"><a href="#cb60-14" aria-hidden="true" tabindex="-1"></a>pca_components <span class="op">=</span> pca.fit_transform(scaled_features)</span>
+<span id="cb60-15"><a href="#cb60-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-16"><a href="#cb60-16" aria-hidden="true" tabindex="-1"></a>kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span><span class="dv">5</span>, random_state<span class="op">=</span><span class="dv">1918</span>)</span>
+<span id="cb60-17"><a href="#cb60-17" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'cluster'</span>] <span class="op">=</span> kmeans.fit_predict(pca_components)</span>
+<span id="cb60-18"><a href="#cb60-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-19"><a href="#cb60-19" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'velocity_rank'</span>] <span class="op">=</span> clean_df.groupby(<span class="st">'cluster'</span>)[<span class="st">'release_speed'</span>].rank(pct<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb60-20"><a href="#cb60-20" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'hbreak_rank'</span>] <span class="op">=</span> clean_df.groupby(<span class="st">'cluster'</span>)[<span class="st">'pfx_x'</span>].rank(pct<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb60-21"><a href="#cb60-21" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'vbreak_rank'</span>] <span class="op">=</span> clean_df.groupby(<span class="st">'cluster'</span>)[<span class="st">'pfx_z'</span>].rank(pct<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb60-22"><a href="#cb60-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-23"><a href="#cb60-23" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'vbreak_decile'</span>] <span class="op">=</span> (clean_df[<span class="st">'vbreak_rank'</span>] <span class="op">*</span> <span class="dv">10</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb60-24"><a href="#cb60-24" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'velocity_decile'</span>] <span class="op">=</span> (clean_df[<span class="st">'velocity_rank'</span>] <span class="op">*</span> <span class="dv">10</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb60-25"><a href="#cb60-25" aria-hidden="true" tabindex="-1"></a>clean_df.loc[:, <span class="st">'hbreak_decile'</span>] <span class="op">=</span> (clean_df[<span class="st">'hbreak_rank'</span>] <span class="op">*</span> <span class="dv">10</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb60-26"><a href="#cb60-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-27"><a href="#cb60-27" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'velocity_improvement_candidate'</span>] <span class="op">=</span> (</span>
+<span id="cb60-28"><a href="#cb60-28" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'vbreak_decile'</span>] <span class="op">&gt;=</span> <span class="dv">3</span>) <span class="op">&amp;</span> </span>
+<span id="cb60-29"><a href="#cb60-29" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'hbreak_decile'</span>] <span class="op">&gt;=</span> <span class="dv">3</span>) <span class="op">&amp;</span> </span>
+<span id="cb60-30"><a href="#cb60-30" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'velocity_decile'</span>] <span class="op">&lt;=</span> <span class="dv">2</span>)</span>
+<span id="cb60-31"><a href="#cb60-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb60-32"><a href="#cb60-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-33"><a href="#cb60-33" aria-hidden="true" tabindex="-1"></a>velocity_improvement_candidates <span class="op">=</span> clean_df[clean_df[<span class="st">'velocity_improvement_candidate'</span>] <span class="op">==</span> <span class="va">True</span>].copy()</span>
+<span id="cb60-34"><a href="#cb60-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-35"><a href="#cb60-35" aria-hidden="true" tabindex="-1"></a>velocity_improvement_candidates_sorted <span class="op">=</span> velocity_improvement_candidates.sort_values(by<span class="op">=</span><span class="st">'pitcher'</span>)</span>
+<span id="cb60-36"><a href="#cb60-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-37"><a href="#cb60-37" aria-hidden="true" tabindex="-1"></a>top_5_velocity_improvement_pitchers <span class="op">=</span> velocity_improvement_candidates_sorted[<span class="st">'pitcher'</span>].value_counts().head(<span class="dv">5</span>)</span>
+<span id="cb60-38"><a href="#cb60-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-39"><a href="#cb60-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Top 5 Pitchers Prioritizing Movement:"</span>)</span>
+<span id="cb60-40"><a href="#cb60-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(top_5_velocity_improvement_pitchers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\18607\AppData\Local\Temp\ipykernel_12672\3805862247.py:17: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+C:\Users\18607\AppData\Local\Temp\ipykernel_12672\3805862247.py:19: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+C:\Users\18607\AppData\Local\Temp\ipykernel_12672\3805862247.py:20: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Top 5 Pitchers Prioritizing Movement:
+pitcher
+676710    734
+684007    673
+665871    610
+594902    588
+641927    504
+Name: count, dtype: int64</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\18607\AppData\Local\Temp\ipykernel_12672\3805862247.py:21: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+C:\Users\18607\AppData\Local\Temp\ipykernel_12672\3805862247.py:23: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+C:\Users\18607\AppData\Local\Temp\ipykernel_12672\3805862247.py:24: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+C:\Users\18607\AppData\Local\Temp\ipykernel_12672\3805862247.py:25: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+C:\Users\18607\AppData\Local\Temp\ipykernel_12672\3805862247.py:27: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy</code></pre>
+</div>
+</div>
+<p>542881: Tyler Anderson 596295: Austin Gomber 676710: Kutter Crawford 594902: Ben Lively 684007: Shota Imanaga</p>
+<p>Determine pitchers prioritizing velocity with the most pitches in the top 20% for velocity but the bottom 30% for both horizonal and vertical break:</p>
+<div id="47da94f6" class="cell" data-execution_count="35">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>clean_df[<span class="st">'break_improvement_candidate'</span>] <span class="op">=</span> (</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'vbreak_decile'</span>] <span class="op">&lt;=</span> <span class="dv">3</span>) <span class="op">&amp;</span> </span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'hbreak_decile'</span>] <span class="op">&lt;=</span> <span class="dv">3</span>) <span class="op">&amp;</span></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>    (clean_df[<span class="st">'velocity_decile'</span>] <span class="op">&gt;=</span> <span class="dv">8</span>)</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a>break_improvement_candidates <span class="op">=</span> clean_df[clean_df[</span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'break_improvement_candidate'</span>] <span class="op">==</span> <span class="va">True</span>].copy()</span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a>break_improvement_candidates_sorted <span class="op">=</span> break_improvement_candidates.sort_values(</span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a>    by<span class="op">=</span><span class="st">'pitcher'</span>)</span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>top_5_break_improvement_pitchers <span class="op">=</span> break_improvement_candidates_sorted[</span>
+<span id="cb64-14"><a href="#cb64-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'pitcher'</span>].value_counts().head(<span class="dv">5</span>)</span>
+<span id="cb64-15"><a href="#cb64-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-16"><a href="#cb64-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Top 5 Pitchers Prioritizing Velocity:"</span>)</span>
+<span id="cb64-17"><a href="#cb64-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(top_5_break_improvement_pitchers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Top 5 Pitchers Prioritizing Velocity:
+pitcher
+667755    363
+694973    336
+678394    255
+657044    250
+687330    239
+Name: count, dtype: int64</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\18607\AppData\Local\Temp\ipykernel_12672\2766881952.py:1: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy</code></pre>
+</div>
+</div>
+<p>667755: Jose Soriano 665625: Elvis Peguero 666974: Yennier Cano 694973: Paul Skenes 656557: Tanner Houck</p>
+<p>Sort the variables into categorical and numerical groups:</p>
+<div id="e04cdb9d" class="cell" data-execution_count="36">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>categorical_col <span class="op">=</span> [</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'pitch_type'</span>,  </span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'stand'</span>, </span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'p_throws'</span>, </span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'home_team'</span>, </span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'away_team'</span>, </span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'bb_type'</span>, </span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'inning_topbot'</span>, </span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'if_fielding_alignment'</span>, </span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'of_fielding_alignment'</span>, </span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'pitch_group'</span></span>
+<span id="cb67-12"><a href="#cb67-12" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb67-13"><a href="#cb67-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-14"><a href="#cb67-14" aria-hidden="true" tabindex="-1"></a>numerical_col <span class="op">=</span> [</span>
+<span id="cb67-15"><a href="#cb67-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'release_speed'</span>, <span class="st">'release_pos_x'</span>, <span class="st">'release_pos_z'</span>, <span class="st">'batter'</span>, <span class="st">'pitcher'</span>,</span>
+<span id="cb67-16"><a href="#cb67-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'zone'</span>, <span class="st">'balls'</span>, <span class="st">'strikes'</span>, <span class="st">'pfx_x'</span>, <span class="st">'pfx_z'</span>, <span class="st">'plate_x'</span>, <span class="st">'plate_z'</span>, </span>
+<span id="cb67-17"><a href="#cb67-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'outs_when_up'</span>, <span class="st">'inning'</span>, <span class="st">'sz_top'</span>, <span class="st">'sz_bot'</span>, <span class="st">'release_spin_rate'</span>,</span>
+<span id="cb67-18"><a href="#cb67-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">'release_extension'</span>, <span class="st">'game_pk'</span>, <span class="st">'release_pos_y'</span>, <span class="st">'at_bat_number'</span>, </span>
+<span id="cb67-19"><a href="#cb67-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">'pitch_number'</span>, <span class="st">'home_score'</span>, <span class="st">'away_score'</span>, <span class="st">'bat_score'</span>, <span class="st">'fld_score'</span>, <span class="st">'spin_axis'</span></span>
+<span id="cb67-20"><a href="#cb67-20" aria-hidden="true" tabindex="-1"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Scale both the numerical and categorical variables and enter them into a preprocessor:</p>
+<div id="577ac649" class="cell" data-execution_count="37">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler, OneHotEncoder</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>numerical_transformer <span class="op">=</span> StandardScaler()</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>categorical_transformer <span class="op">=</span> OneHotEncoder()</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> ColumnTransformer(</span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>    transformers<span class="op">=</span>[</span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>        (<span class="st">'cat'</span>, categorical_transformer, categorical_col),</span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a>        (<span class="st">'num'</span>, numerical_transformer, numerical_col)</span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Use a pipeline to turn the preprocessed variables into a LASSO logistic model; label X and Y variables and sort the data into training and testing sets before fitting the model:</p>
+<div id="ba4de698" class="cell" data-execution_count="38">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>pipeline <span class="op">=</span> Pipeline(steps<span class="op">=</span>[</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'preprocessor'</span>, preprocessor), </span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'classifier'</span>, LogisticRegression(penalty<span class="op">=</span><span class="st">'l1'</span>, solver<span class="op">=</span><span class="st">'liblinear'</span>, </span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>                                      max_iter<span class="op">=</span><span class="dv">1000</span>))</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> X <span class="op">=</span> clean_df[numerical_col <span class="op">+</span> categorical_col] </span>
+<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> clean_df[<span class="st">'pitch_outcome'</span>]</span>
+<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">1918</span>)</span>
+<span id="cb69-16"><a href="#cb69-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-17"><a href="#cb69-17" aria-hidden="true" tabindex="-1"></a>pipeline.fit(X_train, y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="38">
+<style>#sk-container-id-1 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: black;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, white)));
+  --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-icon: #696969;
+
+  @media (prefers-color-scheme: dark) {
+    /* Redefinition of color scheme for dark theme */
+    --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, #111)));
+    --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-icon: #878787;
+  }
+}
+
+#sk-container-id-1 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-1 pre {
+  padding: 0;
+}
+
+#sk-container-id-1 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-1 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-1 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-1 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-1 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-1 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-1 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-1 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-1 label.sk-toggleable__label {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-1 div.sk-toggleable__content {
+  max-height: 0;
+  max-width: 0;
+  overflow: hidden;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  max-height: 200px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label label.sk-toggleable__label,
+#sk-container-id-1 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-1 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-1 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 1.2em;
+}
+
+#sk-container-id-1 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-1 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-1 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 1ex;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-1);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-1 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-1 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>Pipeline(steps=[('preprocessor',
+                 ColumnTransformer(transformers=[('cat', OneHotEncoder(),
+                                                  ['pitch_type', 'stand',
+                                                   'p_throws', 'home_team',
+                                                   'away_team', 'bb_type',
+                                                   'inning_topbot',
+                                                   'if_fielding_alignment',
+                                                   'of_fielding_alignment',
+                                                   'pitch_group']),
+                                                 ('num', StandardScaler(),
+                                                  ['release_speed',
+                                                   'release_pos_x',
+                                                   'release_pos_z', 'batter',
+                                                   'pitcher', 'zone', 'balls',
+                                                   'strikes', 'pfx_x', 'pfx_z',
+                                                   'plate_x', 'plate_z',
+                                                   'outs_when_up', 'inning',
+                                                   'sz_top', 'sz_bot',
+                                                   'release_spin_rate',
+                                                   'release_extension',
+                                                   'game_pk', 'release_pos_y',
+                                                   'at_bat_number',
+                                                   'pitch_number', 'home_score',
+                                                   'away_score', 'bat_score',
+                                                   'fld_score',
+                                                   'spin_axis'])])),
+                ('classifier',
+                 LogisticRegression(max_iter=1000, penalty='l1',
+                                    solver='liblinear'))])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox"><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">&nbsp;&nbsp;Pipeline<a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.pipeline.Pipeline.html">?<span>Documentation for Pipeline</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></label><div class="sk-toggleable__content fitted"><pre>Pipeline(steps=[('preprocessor',
+                 ColumnTransformer(transformers=[('cat', OneHotEncoder(),
+                                                  ['pitch_type', 'stand',
+                                                   'p_throws', 'home_team',
+                                                   'away_team', 'bb_type',
+                                                   'inning_topbot',
+                                                   'if_fielding_alignment',
+                                                   'of_fielding_alignment',
+                                                   'pitch_group']),
+                                                 ('num', StandardScaler(),
+                                                  ['release_speed',
+                                                   'release_pos_x',
+                                                   'release_pos_z', 'batter',
+                                                   'pitcher', 'zone', 'balls',
+                                                   'strikes', 'pfx_x', 'pfx_z',
+                                                   'plate_x', 'plate_z',
+                                                   'outs_when_up', 'inning',
+                                                   'sz_top', 'sz_bot',
+                                                   'release_spin_rate',
+                                                   'release_extension',
+                                                   'game_pk', 'release_pos_y',
+                                                   'at_bat_number',
+                                                   'pitch_number', 'home_score',
+                                                   'away_score', 'bat_score',
+                                                   'fld_score',
+                                                   'spin_axis'])])),
+                ('classifier',
+                 LogisticRegression(max_iter=1000, penalty='l1',
+                                    solver='liblinear'))])</pre></div> </div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox"><label for="sk-estimator-id-2" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">&nbsp;preprocessor: ColumnTransformer<a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.compose.ColumnTransformer.html">?<span>Documentation for preprocessor: ColumnTransformer</span></a></label><div class="sk-toggleable__content fitted"><pre>ColumnTransformer(transformers=[('cat', OneHotEncoder(),
+                                 ['pitch_type', 'stand', 'p_throws',
+                                  'home_team', 'away_team', 'bb_type',
+                                  'inning_topbot', 'if_fielding_alignment',
+                                  'of_fielding_alignment', 'pitch_group']),
+                                ('num', StandardScaler(),
+                                 ['release_speed', 'release_pos_x',
+                                  'release_pos_z', 'batter', 'pitcher', 'zone',
+                                  'balls', 'strikes', 'pfx_x', 'pfx_z',
+                                  'plate_x', 'plate_z', 'outs_when_up',
+                                  'inning', 'sz_top', 'sz_bot',
+                                  'release_spin_rate', 'release_extension',
+                                  'game_pk', 'release_pos_y', 'at_bat_number',
+                                  'pitch_number', 'home_score', 'away_score',
+                                  'bat_score', 'fld_score', 'spin_axis'])])</pre></div> </div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-3" type="checkbox"><label for="sk-estimator-id-3" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">cat</label><div class="sk-toggleable__content fitted"><pre>['pitch_type', 'stand', 'p_throws', 'home_team', 'away_team', 'bb_type', 'inning_topbot', 'if_fielding_alignment', 'of_fielding_alignment', 'pitch_group']</pre></div> </div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-4" type="checkbox"><label for="sk-estimator-id-4" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">&nbsp;OneHotEncoder<a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.preprocessing.OneHotEncoder.html">?<span>Documentation for OneHotEncoder</span></a></label><div class="sk-toggleable__content fitted"><pre>OneHotEncoder()</pre></div> </div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-5" type="checkbox"><label for="sk-estimator-id-5" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">num</label><div class="sk-toggleable__content fitted"><pre>['release_speed', 'release_pos_x', 'release_pos_z', 'batter', 'pitcher', 'zone', 'balls', 'strikes', 'pfx_x', 'pfx_z', 'plate_x', 'plate_z', 'outs_when_up', 'inning', 'sz_top', 'sz_bot', 'release_spin_rate', 'release_extension', 'game_pk', 'release_pos_y', 'at_bat_number', 'pitch_number', 'home_score', 'away_score', 'bat_score', 'fld_score', 'spin_axis']</pre></div> </div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-6" type="checkbox"><label for="sk-estimator-id-6" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">&nbsp;StandardScaler<a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.preprocessing.StandardScaler.html">?<span>Documentation for StandardScaler</span></a></label><div class="sk-toggleable__content fitted"><pre>StandardScaler()</pre></div> </div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-7" type="checkbox"><label for="sk-estimator-id-7" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">&nbsp;LogisticRegression<a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LogisticRegression.html">?<span>Documentation for LogisticRegression</span></a></label><div class="sk-toggleable__content fitted"><pre>LogisticRegression(max_iter=1000, penalty='l1', solver='liblinear')</pre></div> </div></div></div></div></div></div>
+</div>
+</div>
+<p>Determine the intercept and coefficients from the LASSO logistic model:</p>
+<div id="30d81ec7" class="cell" data-execution_count="39">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> pipeline.named_steps[<span class="st">'classifier'</span>]</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>intercept <span class="op">=</span> model.intercept_</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>coefficients <span class="op">=</span> model.coef_[<span class="dv">0</span>]</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>intercept, coefficients</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="39">
+<pre><code>(array([0.14618593]),
+ array([ 4.90984188e-02, -9.57147562e-02,  4.91834129e-01,  1.58327458e-01,
+        -1.56246631e-02,  0.00000000e+00,  8.78166936e-02,  6.30019645e-02,
+         0.00000000e+00,  0.00000000e+00, -1.17414548e-01,  1.43468444e-02,
+         4.52319790e-02,  3.14456769e-02, -7.29074504e-02,  4.46747610e-02,
+        -4.38526151e-02,  7.98803159e-02,  7.63065874e-02,  1.70863779e-02,
+        -2.66653415e-02, -3.39488890e-03,  4.77317372e-02, -5.92716159e-02,
+        -3.14100151e-02,  1.47592295e-02,  1.04644293e-02,  0.00000000e+00,
+        -5.89416726e-02, -6.61122237e-02, -4.39218616e-02,  7.09591942e-03,
+         4.85262642e-02, -8.59140682e-02, -7.04938374e-02,  1.08071828e-02,
+         2.74024972e-02,  2.04541753e-02, -2.29320623e-02,  3.14509732e-03,
+        -1.32506241e-03,  1.50952975e-02,  3.32785855e-02, -6.29848842e-03,
+        -4.97788702e-03,  3.68899460e-02,  3.81093563e-02, -3.92265614e-03,
+         8.71200334e-02,  0.00000000e+00, -1.78689771e-03, -5.55334252e-02,
+        -8.78370830e-03,  2.74078723e-02, -2.52833028e-02,  2.26231610e-02,
+        -3.54244569e-02, -1.18132128e-02, -2.99414846e-02,  1.92774008e-02,
+         9.53322618e-02,  1.68834676e-02,  9.50992154e-03, -7.44941736e-03,
+         1.89908001e-02,  6.05924951e-03,  0.00000000e+00, -1.79270357e-02,
+         0.00000000e+00,  3.31741970e-01, -4.25789511e-01, -5.96689359e-02,
+        -2.18052789e+00,  3.53628501e+00,  0.00000000e+00,  1.75483120e-02,
+        -3.36009792e-02,  1.33268538e-02,  2.49676887e-02,  1.32696548e-02,
+        -1.87674238e-01,  1.33860251e-02,  0.00000000e+00,  2.86898538e-01,
+         3.11779090e-02, -3.37740576e-02, -3.18520587e-03,  1.63558329e-02,
+        -1.55882137e-02, -1.65294968e+00,  2.97768371e-02,  1.17063660e-02,
+         1.95489993e-02, -5.88398547e-03,  1.38577709e-01, -3.81974173e-01,
+         9.71539676e-03,  9.88526872e-02,  2.54266330e-02, -8.21387180e-03,
+         2.26255785e-02,  8.71360568e-02, -2.78885116e-02,  9.36069011e-02,
+        -1.11286293e-01,  1.20387566e-01,  3.56705724e-04,  8.44929005e-03,
+         6.64045773e-04,  2.78765829e-02,  2.29423438e-02]))</code></pre>
+</div>
+</div>
+<p>Test the model using the test data set, print the validation considerations for the model based on this test:</p>
+<div id="9950576e" class="cell" data-execution_count="40">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> recall_score, precision_score, f1_score, accuracy_score, confusion_matrix</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> pipeline.predict(X_test)</span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> y_test.astype(<span class="bu">int</span>)</span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> y_pred.astype(<span class="bu">int</span>)</span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a>accuracy <span class="op">=</span> accuracy_score(y_test, y_pred)</span>
+<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a>recall <span class="op">=</span> recall_score(y_test, y_pred, average<span class="op">=</span><span class="st">'binary'</span>)</span>
+<span id="cb72-10"><a href="#cb72-10" aria-hidden="true" tabindex="-1"></a>precision <span class="op">=</span> precision_score(y_test, y_pred, average<span class="op">=</span><span class="st">'binary'</span>)</span>
+<span id="cb72-11"><a href="#cb72-11" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> f1_score(y_test, y_pred, average<span class="op">=</span><span class="st">'binary'</span>)</span>
+<span id="cb72-12"><a href="#cb72-12" aria-hidden="true" tabindex="-1"></a>cm <span class="op">=</span> confusion_matrix(y_test, y_pred)</span>
+<span id="cb72-13"><a href="#cb72-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-14"><a href="#cb72-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Accuracy: </span><span class="sc">{</span>accuracy<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb72-15"><a href="#cb72-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Recall: </span><span class="sc">{</span>recall<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb72-16"><a href="#cb72-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Precision: </span><span class="sc">{</span>precision<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb72-17"><a href="#cb72-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"F1 Score: </span><span class="sc">{</span>f1<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb72-18"><a href="#cb72-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Confusion Matrix:"</span>)</span>
+<span id="cb72-19"><a href="#cb72-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Accuracy: 0.7990353697749196
+Recall: 0.7733980023839861
+Precision: 0.8781034160910958
+F1 Score: 0.8224315405293179
+Confusion Matrix:
+[[13489  2612]
+ [ 5513 18816]]</code></pre>
+</div>
+</div>
+<p>Tune the parameters using a ‘grid_search’ to ensure the model is optimized, then print the validation values using the best parameters:</p>
+<div id="d2509832" class="cell" data-execution_count="41">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> { </span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'classifier__penalty'</span>: [<span class="st">'l1'</span>], </span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'classifier__solver'</span>: [<span class="st">'liblinear'</span>, <span class="st">'saga'</span>],  </span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'classifier__max_iter'</span>: [<span class="dv">1000</span>, <span class="dv">10000</span>]</span>
+<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a>grid_search <span class="op">=</span> GridSearchCV(pipeline, param_grid, cv<span class="op">=</span><span class="dv">5</span>, scoring<span class="op">=</span><span class="st">'accuracy'</span>, verbose<span class="op">=</span><span class="dv">1</span>, n_jobs<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>grid_search.fit(X_train, y_train)</span>
+<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Best parameters found: </span><span class="sc">{</span>grid_search<span class="sc">.</span>best_params_<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Best cross-validation score: </span><span class="sc">{</span>grid_search<span class="sc">.</span>best_score_<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-16"><a href="#cb74-16" aria-hidden="true" tabindex="-1"></a>best_model <span class="op">=</span> grid_search.best_estimator_</span>
+<span id="cb74-17"><a href="#cb74-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-18"><a href="#cb74-18" aria-hidden="true" tabindex="-1"></a>y_pred_best <span class="op">=</span> best_model.predict(X_test)</span>
+<span id="cb74-19"><a href="#cb74-19" aria-hidden="true" tabindex="-1"></a>y_pred_best <span class="op">=</span> y_pred_best.astype(<span class="bu">int</span>)</span>
+<span id="cb74-20"><a href="#cb74-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-21"><a href="#cb74-21" aria-hidden="true" tabindex="-1"></a>accuracy_best <span class="op">=</span> accuracy_score(y_test, y_pred_best)</span>
+<span id="cb74-22"><a href="#cb74-22" aria-hidden="true" tabindex="-1"></a>recall_best <span class="op">=</span> recall_score(y_test, y_pred_best, average<span class="op">=</span><span class="st">'binary'</span>)</span>
+<span id="cb74-23"><a href="#cb74-23" aria-hidden="true" tabindex="-1"></a>precision_best <span class="op">=</span> precision_score(y_test, y_pred_best, average<span class="op">=</span><span class="st">'binary'</span>)</span>
+<span id="cb74-24"><a href="#cb74-24" aria-hidden="true" tabindex="-1"></a>f1_best <span class="op">=</span> f1_score(y_test, y_pred_best, average<span class="op">=</span><span class="st">'binary'</span>)</span>
+<span id="cb74-25"><a href="#cb74-25" aria-hidden="true" tabindex="-1"></a>cm_best <span class="op">=</span> confusion_matrix(y_test, y_pred_best)</span>
+<span id="cb74-26"><a href="#cb74-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-27"><a href="#cb74-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Accuracy: </span><span class="sc">{</span>accuracy_best<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb74-28"><a href="#cb74-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Recall: </span><span class="sc">{</span>recall_best<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb74-29"><a href="#cb74-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Precision: </span><span class="sc">{</span>precision_best<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb74-30"><a href="#cb74-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"F1 Score: </span><span class="sc">{</span>f1_best<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb74-31"><a href="#cb74-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Confusion Matrix:"</span>)</span>
+<span id="cb74-32"><a href="#cb74-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cm_best)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Fitting 5 folds for each of 4 candidates, totalling 20 fits
+Best parameters found: {'classifier__max_iter': 10000, 'classifier__penalty': 'l1', 'classifier__solver': 'liblinear'}
+Best cross-validation score: 0.7990700184040946
+Accuracy: 0.7990106356665843
+Recall: 0.7733980023839861
+Precision: 0.878062438751225
+F1 Score: 0.8224135670265309
+Confusion Matrix:
+[[13488  2613]
+ [ 5513 18816]]</code></pre>
+</div>
+</div>
+<p>Finding the coefficients of the pitch group feature within the LASSO logistic model to determine their importance in creating predictions:</p>
+<div id="5c0d4ae9" class="cell" data-execution_count="42">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>pipeline.fit(X_train, y_train)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>categorical_transformer <span class="op">=</span> pipeline.named_steps[<span class="st">'preprocessor'</span>].transformers_[<span class="dv">0</span>][<span class="dv">1</span>] </span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>categorical_feature_names <span class="op">=</span> categorical_transformer.get_feature_names_out(categorical_col)</span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>all_feature_names <span class="op">=</span> numerical_col <span class="op">+</span> <span class="bu">list</span>(categorical_feature_names) </span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a>feature_importance <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Feature'</span>: all_feature_names,</span>
+<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Coefficient'</span>: coefficients</span>
+<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-14"><a href="#cb76-14" aria-hidden="true" tabindex="-1"></a>feature_importance[<span class="st">'Abs_Coefficient'</span>] <span class="op">=</span> feature_importance[<span class="st">'Coefficient'</span>].<span class="bu">abs</span>()</span>
+<span id="cb76-15"><a href="#cb76-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-16"><a href="#cb76-16" aria-hidden="true" tabindex="-1"></a>pitch_group_features <span class="op">=</span> [</span>
+<span id="cb76-17"><a href="#cb76-17" aria-hidden="true" tabindex="-1"></a>    feature <span class="cf">for</span> feature <span class="kw">in</span> categorical_feature_names <span class="cf">if</span> <span class="st">'pitch_group'</span> <span class="kw">in</span> feature</span>
+<span id="cb76-18"><a href="#cb76-18" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb76-19"><a href="#cb76-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-20"><a href="#cb76-20" aria-hidden="true" tabindex="-1"></a>feature_importance_pitch_group <span class="op">=</span> feature_importance[</span>
+<span id="cb76-21"><a href="#cb76-21" aria-hidden="true" tabindex="-1"></a>    feature_importance[<span class="st">'Feature'</span>].isin(pitch_group_features)</span>
+<span id="cb76-22"><a href="#cb76-22" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb76-23"><a href="#cb76-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-24"><a href="#cb76-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(feature_importance_pitch_group[[<span class="st">'Feature'</span>, <span class="st">'Coefficient'</span>, <span class="st">'Abs_Coefficient'</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  Feature  Coefficient  Abs_Coefficient
+110  pitch_group_fastball     0.022942         0.022942</code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
