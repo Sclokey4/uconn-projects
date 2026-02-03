@@ -1,0 +1,1198 @@
+---
+title: "Sports Statistics Experiential Learning Final Report"
+author: "Sara Clokey"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+## **Summary**
+Baseball at the collegiate level increasingly relies on player development to cultivate future success. As baseball technology has become more accurate and more accessible, these player development and evaluation efforts have shifted toward more technical and analytic approaches. One of the primary tools used at the collegiate level is the TrackMan V3 Game Tracking unit. This system "uses dual (short-range and long-range) radar tracking systems enhanced by synchronized high-speed optics and a two-piece, 4k camera to capture ball movement metrics at release (from the pitcher's hand), during flight, and as the ball crosses the strike zone around home plate" (Pifer, 2024). The resulting dataset includes over 150 measurable variables for every individual pitch from a scrimmage or game. TrackMan also offers a portable option that allows for data collection during developmental work, such as bullpens and hitting sessions. 
+
+As these technologies have become more democratized, trickling down from the professional level to college programs, player evaluation and development have leaned into analytic tendencies. Prospects like Brody Brecht have risen in draft value because metrics such as pitch shapes are readily quantifiable (Chen et al., 2025). Collegiate baseball players have more performance data at their disposal than ever before, transforming their ability to evaluate progress. 
+
+My semester-long project with UConn Baseball sought to integrate the team's goal-setting habits with a data-driven review process. Each fall, Head Coach Jim Penders requires each player to identify an athletic goal for the upcoming semester in preparation for the spring season. Over my three years with the team, however, there was no formal mechanism at the end of the fall semester to reassess or revise these goals. Since "goal revision/adjustment is a central factor underlying the decision to persist with or adjust a goal in the direction and extent of goal-performance discrepancy," I decided to utilize TrackMan data collected throughout the fall semester to create individualized goal reports for each player (Bird et al., 2024). These reports aimed to establish a feedback loop between the players and coaching staff to anchor goal progression in objective visualizations.
+
+At the beginning of the project, I sorted through the goals submitted for the fall semester. Of the 43 players on the roster, 11 focused their goals on returning from injury or holding baserunners; these areas fall beyond the scope of TrackMan's measurement and data capture capabilities. As a result, the reports covered 32 players - 20 pitchers and 12 position players. Each report was tailored to the specific goal set by the player with clear, relevant visualizations related to their progression. Rather than inserting over 300 pages of analysis across 32 reports, I will include exemplar visualizations that highlight my visualization techniques and explain the connection between the player goals and the visualization.
+
+## **Project Process**
+The first step in this process was determining a focus area that I thought would benefit the overall UConn Baseball program. Given my experience working for the team, I had a solid understanding of organizational values and priorities, which I utilized to select a project topic that connected to the team's mission. I recognized how much the coaching staff emphasizes goal setting as a method for measuring success and development, especially on an individual level, during the fall semester. I also already had access to the team's athletic goals from my existing role with the team; the combination of accessibility and importance led me to focus on these athletic goals as the basis for my project. I ran this idea by our team supervisor, the Director of Baseball Analytics, and he agreed that it aligned with the team's development plans for the fall.
+
+The next step in this process was the requisite data collection for fall scrimmages. As part of my existing role with the team, I supported data collection over the fall season by operating the Stadium TrackMan system for all contests to capture pitch-level data. These CSV files were then made available for analysis, which I compiled into one large file covering all fall data. From there, I determined which goals were feasible to analyze using the TrackMan data - 11 goals focused on baserunning or injury rehabilitation, which is outside TrackMan's data collection scope. I then took the 32 remaining, applicable goals and set out to create goal visualization reports that honed in on data specifically related to the individual's athletic goals.
+
+For some players, I utilized TrackMan data from the Spring 2025 season to bolster their goal progression by comparing their spring data to their fall data. However, 24 of the 43 rostered players are new this fall (either because they transferred or are freshmen), so this comparison was not consistently available. I found it easiest to focus on pitchers and then analyze the position players, as there is significant overlap between player goals based on position. In fact, I combined reports for all pitchers whose goals focused on either becoming a starter or becoming a reliever, and then combined reports for all infielders whose goal centered around gaining a starting infield spot. The greatest challenge for this project was the reality that some goals were nonspecific; I had to spend more time determining what visualizations would be helpful for analyzing a goal like "I will maintain my position as the Friday starter" versus a goal like "I will have a 60% first pitch strike rate." While some goals were more challenging to visualize, they also provided an opportunity to be creative and apply my baseball knowledge to understand the statistical underpinnings of the goals. 
+
+## **Project Results**
+In total, I created 22 reports totaling over 300 pages of visualization and analysis for 32 players. Rather than building a model or attempting to predict performance, I decided to take a player development-focused approach by clearly visualizing current performance in relation to players' individual goals. Especially for players or coaches who may not have developed a technical understanding, I find visualizations to be a bridge between the players and the data that aids their understanding of their performance. With this understanding, I prioritized clarity in my visualizations so players, coaches, and support staff could comprehend the data without significant explanation. This priority resulted in visualizations featuring specific titles, labels, and legends, as well as changing variable titles to match baseball verbiage. 
+
+These visualizations will be used by the baseball analytics staff to highlight areas of strength and weakness for the players as they approach the spring season. The team typically holds meetings with each player between the end of the fall season and the beginning of the spring semester. These visualization reports provide clear, specific data to support these conversations and offer objective feedback about the players' success in meeting the goals they set at the beginning of the semester.
+
+## **Pitching Analysis Example Visualizations**
+
+
+### **Oliver Pudvar's Fall 2025 Athletic Goal: I will maintain my position as the Friday starter.**
+
+As mentioned earlier, these nonspecific athlete goals were more challenging to visualize, but I used my knowledge of the program and time in the baseball office this semester to inform my analysis. Our pitching coach has emphasized the importance of avoiding 'middle-middle' pitches, which are pitches thrown in the middle ninth of the strike zone. Starting pitchers are known for having greater control over their pitches and stronger situational awareness, and it follows that pitchers on this staff will prioritize avoiding middle-middle pitches, as they are instructed to do.
+
+This logic led to my creation of a strike zone visualization of middle-middle pitches, color-coded by pitch type. This strategy helps pitchers determine which types of pitches they struggle to command, especially in the middle of the zone, which may inform their ability to extend into 6- or 7-inning starts from a control perspective. Oliver Pudvar, for example, started for the Huskies in the spring and demonstrates an ability in the visual below to avoid throwing his slower pitches (changeup and slider) in the middle of the zone. This visual connects to his goal of maintaining his starter role by demonstrating his ability to follow a coach's instructions and command his pitches during outings, both of which are valued traits in a starting pitcher.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r}
+setwd("C:/Users/18607/OneDrive - University of Connecticut/UConn Baseball 25-26/sports-stat")
+
+data = read.csv("uconn-fall-2025-data.csv")
+spring_data = read.csv("uconn-spring-2025-data.csv")
+
+pudvar_data = data[data$Pitcher == "Pudvar, Oliver",]
+
+library(ggplot2)
+library(knitr)
+library(dplyr)
+library(tidyr)
+library(ggforce)
+library(sportyR)
+
+shadow_offset <- 0.15
+
+middle_middle <- pudvar_data %>%
+  filter(
+    PlateLocSide >= -0.3167,
+    PlateLocSide <=  0.3167,
+    PlateLocHeight >= 2.1667,
+    PlateLocHeight <= 2.8333
+  )
+
+ggplot(middle_middle, aes(x = PlateLocSide, y = PlateLocHeight, color = TaggedPitchType)) +
+  geom_point(alpha = 0.8, size = 3) +
+  geom_rect(aes(xmin = -0.95 - shadow_offset, xmax = 0.95 + shadow_offset,
+                ymin = 1.5 - shadow_offset, ymax = 3.5 + shadow_offset),
+            fill = NA, color = "gray70", linetype = "dashed", linewidth = 0.8) +
+  geom_rect(aes(xmin = -0.95, xmax = 0.95, ymin = 1.5, ymax = 3.5),
+            fill = NA, color = "black", linewidth = 1) +
+  geom_segment(
+  aes(x = -0.3167, xend = -0.3167,
+      y = 1.5,      yend = 3.5),
+  color = "black", linewidth = 0.5
+) +
+geom_segment(
+  aes(x = 0.3167, xend = 0.3167,
+      y = 1.5,    yend = 3.5),
+  color = "black", linewidth = 0.5
+) +
+geom_segment(
+  aes(x = -0.95, xend = 0.95,
+      y = 2.1667, yend = 2.1667),
+  color = "black", linewidth = 0.5
+) +
+geom_segment(
+  aes(x = -0.95, xend = 0.95,
+      y = 2.8333, yend = 2.8333),
+  color = "black", linewidth = 0.5
+)+
+  labs(
+    title = "Oliver Pudvar — Middle-Middle Pitches (Fall 2025)",
+    x = "Horizontal Location (ft)",
+    y = "Vertical Location (ft)",
+    color = "Pitch Type"
+  ) +
+  coord_fixed() +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+This analysis extends to a summary of Pudvar's middle-middle pitches: what are the results of pitches that he throws in this section of the zone? Each pitch thrown middle-middle includes information about the play result, exit speed, and pitch call, which demonstrate Pudvar's success on these pitches. Of the 19 pitches Pudvar threw middle-middle in the fall season, only four qualify as hard contact (exit speed of 92 mph or more), and only two resulted in hits (both singles). Pudvar demonstrated his ability to leave the ball outside the middle of the plate, and even the pitches he threw there did not result in a significant offensive advantage. The command ability (demonstrated by relatively few pitches thrown middle-middle) and the deception of his pitches (demonstrated by the lack of offensive opportunities created on middle-middle pitches) bolster Pudvar's case for continuing to be a starting pitcher for the 2026 season.
+
+```{r}
+x_min <- -0.3167
+x_max <-  0.3167
+y_min <-  2.1667
+y_max <-  2.8333
+
+middle_middle_pitches <- pudvar_data %>%
+  filter(
+    PlateLocSide >= x_min,
+    PlateLocSide <= x_max,
+    PlateLocHeight >= y_min,
+    PlateLocHeight <= y_max
+  )
+
+middle_middle_summary <- middle_middle_pitches %>%
+  select(TaggedPitchType, PitchCall, PlayResult, ExitSpeed, Angle, Distance)
+
+kable(middle_middle_summary, caption = "Middle-Middle Pitch Summary — Pudvar (Fall 2025)")
+```
+
+### JT Caruso's Fall 2025 Athletic Goal: I will be throwing more strikes when pitching by having more confidence in myself, that no one can hit me.
+
+The main aspect of Caruso's goal I decided to focus on was his ability to throw more strikes. I sorted all of his pitches into the three zones used by TrackMan: inside the strike zone, in the shadow zone (one ball off the zone), and outside the zone. Because Caruso is a returning player, I created this visual using both his spring and fall data to determine if he did, in fact, throw more strikes this semester than in the previous season. The strike zone visualization for Caruso's spring season is below:
+
+```{r}
+caruso_spring_data <- spring_data[
+  spring_data$Pitcher == "Caruso, JT", 
+]
+caruso_spring_data$TaggedPitchType[
+  caruso_spring_data$TaggedPitchType == "ChangeUp"
+] <- "Changeup"
+
+caruso_fall_data <- data[data$Pitcher == "Caruso, JT", ]
+caruso_fall_data$TaggedPitchType[
+  caruso_fall_data$TaggedPitchType == "ChangeUp"
+] <- "Changeup"
+
+strike_x_min  <- -0.95
+strike_x_max  <-  0.95
+strike_y_min  <-  1.50
+strike_y_max  <-  3.50
+shadow_offset <-  0.15
+
+caruso_spring_data <- caruso_spring_data %>%
+  mutate(
+    ZoneCategory = case_when(
+      PlateLocSide  >= strike_x_min  &
+      PlateLocSide  <= strike_x_max  &
+      PlateLocHeight >= strike_y_min &
+      PlateLocHeight <= strike_y_max ~ "StrikeZone",
+      
+      PlateLocSide  >= (strike_x_min  - shadow_offset) &
+      PlateLocSide  <= (strike_x_max  + shadow_offset) &
+      PlateLocHeight >= (strike_y_min - shadow_offset) &
+      PlateLocHeight <= (strike_y_max + shadow_offset) ~ "ShadowZone",
+      
+      TRUE ~ "Outside"
+    )
+  )
+
+ggplot(
+  caruso_spring_data,
+  aes(x = PlateLocSide, y = PlateLocHeight, color = ZoneCategory)
+) +
+  geom_rect(
+    aes(
+      xmin = strike_x_min  - shadow_offset,
+      xmax = strike_x_max  + shadow_offset,
+      ymin = strike_y_min  - shadow_offset,
+      ymax = strike_y_max  + shadow_offset
+    ),
+    fill = NA,
+    color = "gray70",
+    linetype = "dashed",
+    linewidth = 0.8
+  ) +
+  geom_rect(
+    aes(
+      xmin = strike_x_min,
+      xmax = strike_x_max,
+      ymin = strike_y_min,
+      ymax = strike_y_max
+    ),
+    fill = NA,
+    color = "black",
+    linewidth = 1
+  ) +
+  geom_segment(
+    aes(
+      x = -0.316,  xend = -0.316,
+      y = strike_y_min,
+      yend = strike_y_max
+    ),
+    color = "black",
+    linewidth = 0.5
+  ) +
+  geom_segment(
+    aes(
+      x = 0.316,   xend = 0.316,
+      y = strike_y_min,
+      yend = strike_y_max
+    ),
+    color = "black",
+    linewidth = 0.5
+  ) +
+  geom_segment(
+    aes(
+      x = strike_x_min,
+      xend = strike_x_max,
+      y = 2.166,
+      yend = 2.166
+    ),
+    color = "black",
+    linewidth = 0.5
+  ) +
+  geom_segment(
+    aes(
+      x = strike_x_min,
+      xend = strike_x_max,
+      y = 2.833,
+      yend = 2.833
+    ),
+    color = "black",
+    linewidth = 0.5
+  ) +
+  geom_point(alpha = 0.7, size = 2) +
+  scale_color_manual(
+    values = c(
+      "StrikeZone" = "blue",
+      "ShadowZone" = "orange",
+      "Outside"    = "gray50"
+    )
+  ) +
+  labs(
+    title = "JT Caruso – Pitch Locations by Zone (Spring 2025)",
+    x = "Horizontal Location (ft)",
+    y = "Vertical Location (ft)",
+    color = "Zone"
+  ) +
+  coord_fixed() +
+  theme_minimal()
+```
+
+The strike zone visualization for Caruso's fall season is below:
+```{r}
+caruso_fall_data <- caruso_fall_data %>%
+  mutate(
+    ZoneCategory = case_when(
+      PlateLocSide >= strike_x_min &
+      PlateLocSide <= strike_x_max &
+      PlateLocHeight >= strike_y_min &
+      PlateLocHeight <= strike_y_max ~ "StrikeZone",
+      
+      PlateLocSide >= (strike_x_min - shadow_offset) &
+      PlateLocSide <= (strike_x_max + shadow_offset) &
+      PlateLocHeight >= (strike_y_min - shadow_offset) &
+      PlateLocHeight <= (strike_y_max + shadow_offset) ~ "ShadowZone",
+      
+      TRUE ~ "Outside"
+    )
+  )
+
+ggplot(
+  caruso_fall_data,
+  aes(x = PlateLocSide, y = PlateLocHeight, color = ZoneCategory)
+) +
+  geom_rect(
+    aes(
+      xmin = strike_x_min - shadow_offset,
+      xmax = strike_x_max + shadow_offset,
+      ymin = strike_y_min - shadow_offset,
+      ymax = strike_y_max + shadow_offset
+    ),
+    fill = NA,
+    color = "gray70",
+    linetype = "dashed",
+    linewidth = 0.8
+  ) +
+  geom_rect(
+    aes(
+      xmin = strike_x_min,
+      xmax = strike_x_max,
+      ymin = strike_y_min,
+      ymax = strike_y_max
+    ),
+    fill = NA,
+    color = "black",
+    linewidth = 1
+  ) +
+  geom_segment(
+    aes(
+      x = -0.316,
+      xend = -0.316,
+      y = strike_y_min,
+      yend = strike_y_max
+    ),
+    color = "black",
+    linewidth = 0.5
+  ) +
+  geom_segment(
+    aes(
+      x = 0.316,
+      xend = 0.316,
+      y = strike_y_min,
+      yend = strike_y_max
+    ),
+    color = "black",
+    linewidth = 0.5
+  ) +
+  geom_segment(
+    aes(
+      x = strike_x_min,
+      xend = strike_x_max,
+      y = 2.166,
+      yend = 2.166
+    ),
+    color = "black",
+    linewidth = 0.5
+  ) +
+  geom_segment(
+    aes(
+      x = strike_x_min,
+      xend = strike_x_max,
+      y = 2.833,
+      yend = 2.833
+    ),
+    color = "black",
+    linewidth = 0.5
+  ) +
+  geom_point(
+    alpha = 0.7,
+    size = 2
+  ) +
+  scale_color_manual(
+    values = c(
+      "StrikeZone" = "blue",
+      "ShadowZone" = "orange",
+      "Outside"    = "gray50"
+    )
+  ) +
+  labs(
+    title = "JT Caruso – Pitch Locations by Zone (Fall 2025)",
+    x = "Horizontal Location (ft)",
+    y = "Vertical Location (ft)",
+    color = "Zone"
+  ) +
+  coord_fixed() +
+  theme_minimal()
+```
+
+While these visualizations are helpful in determining general estimates for strike percentage, I also included summary tables to analyze more specific comparison points between the spring and fall seasons. These summaries demonstrate that Caruso maintained his strike zone percentage, throwing 49.4% strikes in the fall and 49.7% strikes in the spring. However, he did increase his shadow zone percentage by 0.7% from the spring to the fall, demonstrating a slightly higher concentration of pitches that might generate swings and misses or close calls for the umpire to determine.
+
+```{r}
+caruso_spring_data %>%
+  group_by(ZoneCategory) %>%
+  summarise(
+    Count = n(),
+    Percentage = round(n() / nrow(caruso_spring_data) * 100, 1),
+    .groups = "drop"
+  ) %>%
+  kable(caption = "Caruso Zone Summary (Spring 2025)")
+```
+
+```{r}
+caruso_fall_data %>%
+  group_by(ZoneCategory) %>%
+  summarise(
+    Count = n(),
+    Percentage = round(n() / nrow(caruso_fall_data) * 100, 1)
+  ) %>%
+  kable(caption = "JT Caruso Zone Summary (Fall 2025)")
+```
+
+```{r}
+spring_strike_rate <- caruso_spring_data %>%
+  summarise(
+    StrikePct = round(
+      sum(ZoneCategory == "StrikeZone") / n() * 100,
+      digits = 1
+    )
+  )
+
+fall_strike_rate <- caruso_fall_data %>%
+  summarise(
+    StrikePct = round(
+      sum(ZoneCategory == "StrikeZone") / n() * 100,
+      digits = 1
+    )
+  )
+
+kable(
+  data.frame(
+    Season = c("Spring 2025", "Fall 2025"),
+    StrikePct = c(
+      spring_strike_rate$StrikePct,
+      fall_strike_rate$StrikePct
+    )
+  ),
+  caption = "JT Caruso Overall Strike Zone Percentage"
+)
+```
+
+### **Brady Ericson's Fall 2025 Athletic Goal: This fall semester my goal is to increase my velo into the upper 80s while maintaining my ability to throw strikes. I am going to become even more comfortable in all of my pitches and be confident in throwing any pitch in any count.**
+
+For this visualization, I focused on Ericson's goal to increase the velocity of his fastball into the upper 80s. The following time series graph demonstrates Ericson's velocity over the fall season from his first outing to his last. This type of visualization explores his ability to reach and maintain velocity on his fastball while also considering his other pitches, as relative velocity between pitches is an important factor in disrupting a hitter's timing. While Ericson did not reach his goal of increasing his velocity into the 80s, as his pitches never broke 85 mph, he maintained relative consistency in his fastball velocity throughout the season, even as a freshman adjusting to a collegiate program's workload. There is also an interesting shift in velocity when comparing his changeup and curveball, which demonstrates a potential strength moving forward. Changeups are meant to be a faster pitch than curveballs, which is a skill Ericson seemed to struggle with early in the season before adjusting to the proper pitch mix formula. 
+```{r}
+ericson_data = data[data$Pitcher == "Ericson, Brady",]
+
+ericson_data <- ericson_data %>%
+  mutate(Index = row_number())
+
+ggplot(ericson_data, aes(x = Index, y = RelSpeed, color = TaggedPitchType)) +
+  geom_line(alpha = 0.6) +
+  geom_smooth(span = 0.2, se = FALSE, linewidth = 1.2) +
+  labs(
+    title = "Ericson Pitch Velocity Trends by Pitch Type",
+    x = "Pitch Number",
+    y = "Velocity (mph)",
+    color = "Pitch Type"
+  ) +
+  theme_minimal(base_size = 14) +
+  scale_color_brewer(palette = "Set2")
+```
+
+### **Garret Garbinski's Fall 2025 Athletic Goal: I will earn a significant role on the team. After sitting out for a year, I have been nonstop thinking about my time to contribute. Whether it be a starter, closer, or first guy out of the pen, I will showcase what I have to bring to the table.**
+
+### **Evan Hamberger's Fall 2025 Athletic Goal: I will become an every weekend guy.**
+
+### **Skiffington's Fall 2025 Athletic Goal: My athletic goal for this semester is to set myself up as best as I can to earn a role this spring.**
+
+Here, we have an example of combining several similar goals into one report: Garbinski, Hamberger, and Skiffington's goals center around securing a meaningful role on the pitching staff. After conducting individual analyses of each pitcher in relation to their goal, I also used the following tools to compare the three pitchers to each other. The first table summarizes their fall pitching performances, using strike zone percentage, walks, strikeouts, whiff percentage, and average batter exit velocity as proxies for success. For pitchers to have a meaningful role on the UConn staff, the pitching coach typically looks for high strikeout numbers, low walk numbers, the ability to throw strikes, and the ability to throw strikes that miss bats. These factors are examined in this summary, comparing these three pitchers' effectiveness during the fall season.
+```{r}
+garbinski_data = data[data$Pitcher == "Garbinski, Garret",]
+
+hamberger_data = data[data$Pitcher == "Hamberger, Evan",]
+
+skiffington_data = data[data$Pitcher == "Skiffington, Traigh",]
+
+pitchers_list <- list(
+  "Garbinski" = garbinski_data,
+  "Hamberger" = hamberger_data,
+  "Skiffington" = skiffington_data
+)
+
+pitcher_summary <- bind_rows(
+  lapply(
+    names(pitchers_list),
+    function(name) {
+      df <- pitchers_list[[name]]
+      
+      total_pitches <- nrow(df)
+      
+      zone_pitches <- sum(
+        df$PlateLocSide >= -0.95 &
+        df$PlateLocSide <= 0.95  &
+        df$PlateLocHeight >= 1.5 &
+        df$PlateLocHeight <= 3.5,
+        na.rm = TRUE
+      )
+      
+      total_walks <- sum(df$KorBB == "Walk", na.rm = TRUE)
+      
+      total_strikeouts <- sum(
+        df$KorBB == "Strikeout",
+        na.rm = TRUE
+      )
+      
+      whiff_pct <- mean(
+        df$PitchCall == "StrikeSwinging",
+        na.rm = TRUE
+      ) * 100
+      
+      avg_exit_velo <- mean(df$ExitSpeed, na.rm = TRUE)
+      
+      tibble(
+        Pitcher = name,
+        ZonePct = round(
+          100 * zone_pitches / total_pitches,
+          digits = 1
+        ),
+        Total_Walks = total_walks,
+        Total_Strikeouts = total_strikeouts,
+        WhiffPct = round(whiff_pct, digits = 1),
+        AvgExitVelo = round(avg_exit_velo, digits = 1)
+      )
+    }
+  )
+)
+
+kable(
+  pitcher_summary,
+  caption = "Fall 2025 Pitcher Comparison Summary"
+)
+```
+
+The bar chart below expands on the summary comparison of Garbinski, Hamberger, and Skiffington by directly comparing their whiff percentage and zone percentage. Pitchers need to have enough command to locate their pitches in the zone, but also be able to get hitters to swing and miss on those pitches. Below, we see that Hamberger has a slightly lower strike percentage than Garbinski for the fall season but almost double the whiff percentage, while Skiffington ranks last in both categories. Based on these factors alone, it seems Hamberger is the most likely of the three pitchers to secure a meaningful role in the bullpen for the spring season.
+```{r}
+pitcher_summary_long <- pitcher_summary %>%
+  pivot_longer(cols = c("ZonePct", "WhiffPct"),
+               names_to = "Metric", values_to = "Value")
+
+ggplot(pitcher_summary_long, aes(x = Pitcher, y = Value, fill = Metric)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Pitcher Comparison: Zone% and Whiff%",
+    y = "Percentage",
+    x = "Pitcher"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1")
+```
+
+### **Sam Hutchinson's Fall 2025 Athletic Goal: I will have above a 60% first strike percentage.**
+
+Of the goals provided by the players, Hutchinson demonstrates a comparatively straightforward analysis. To expand on the analysis of his first pitch strike (FPS) percentage, I created a visualization broken down by hitter handedness: first pitch strike locations and pitch types broken down by left-handed batters and right-handed batters. This strike zone visual, paired with a summary table that compares FPS percentage based on handedness, demonstrates much greater success throwing FPS against righties than against lefties. While both percentages are below his goal of 60%, this analysis demonstrates an even greater area of improvement heading into the spring season: securing FPS against left-handed batters.
+
+```{r, fig.width=8, fig.height=8, out.height="8in", fig.align='center'}
+hutchinson_data <- data %>%
+  filter(Pitcher == "Hutchinson, Sam") %>%
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  arrange(Date, PitchNo)
+
+hutchinson_first_pitch <- hutchinson_data %>%
+  filter(PitchofPA == 1) %>%
+  mutate(
+    FirstPitchCall = ifelse(
+      PitchCall %in% c(
+        "StrikeCalled",
+        "StrikeSwinging",
+        "FoulBallNotFieldable",
+        "InPlay"
+      ),
+      "Strike",
+      "Ball"
+    )
+  )
+
+ggplot(
+  hutchinson_first_pitch,
+  aes(
+    x = PlateLocSide,
+    y = PlateLocHeight,
+    color = TaggedPitchType,
+    shape = FirstPitchCall
+  )
+) +
+  geom_rect(
+    aes(
+      xmin = strike_x_min - shadow_offset,
+      xmax = strike_x_max + shadow_offset,
+      ymin = strike_y_min - shadow_offset,
+      ymax = strike_y_max + shadow_offset
+    ),
+    fill = NA,
+    color = "gray70",
+    linetype = "dashed",
+    linewidth = 0.8
+  ) +
+  geom_rect(
+    aes(
+      xmin = strike_x_min,
+      xmax = strike_x_max,
+      ymin = strike_y_min,
+      ymax = strike_y_max
+    ),
+    fill = NA,
+    color = "black",
+    linewidth = 1
+  ) +
+  geom_point(alpha = 0.85, size = 2.5) +
+  scale_shape_manual(values = c("Strike" = 16, "Ball" = 17)) +
+  scale_color_brewer(palette = "Set2") +
+  labs(
+    title = "Hutchinson First Pitches (LHB vs. RHB)",
+    x = "Horizontal Plate Location (ft)",
+    y = "Vertical Plate Location (ft)",
+    color = "Pitch Type",
+    shape = "Pitch Result"
+  ) +
+  coord_fixed() +
+  facet_wrap(~ BatterSide) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    legend.box = "vertical",
+    plot.margin = margin(1, 1, 1.5, 1, "cm"),
+    strip.text = element_text(size = 12)
+  ) +
+  guides(
+    color = guide_legend(ncol = 2, title.position = "top", title.hjust = 0.5),
+    shape = guide_legend(title.position = "top", title.hjust = 0.5)
+  )
+```
+
+```{r}
+hutchinson_first_pitch <- hutchinson_data %>%
+  filter(PitchofPA == 1) %>%
+  mutate(
+    FirstPitchCall = ifelse(
+      PitchCall %in% c(
+        "StrikeCalled",
+        "StrikeSwinging",
+        "FoulBallNotFieldable",
+        "InPlay"
+      ),
+      "Strike",
+      "Ball"
+    )
+  )
+
+strike_summary_by_batter <- hutchinson_first_pitch %>%
+  group_by(BatterSide, FirstPitchCall) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  pivot_wider(
+    names_from = FirstPitchCall,
+    values_from = Count,
+    values_fill = 0
+  ) %>%
+  mutate(
+    Total = Strike + Ball,
+    `Strike %` = round(100 * Strike / Total, 1)
+  ) %>%
+  arrange(BatterSide)
+
+kable(
+  strike_summary_by_batter,
+  caption = "Hutchinson First Pitch Strikes by Batter Handedness",
+  align = "c"
+)
+```
+
+
+## **Hitting Analysis Example Visualizations**
+
+
+### **Tyler Minick's Fall 2025 Athletic Goal: Stay healthy and walk more than I strike out.** 
+
+Focusing on Minick's goal to walk more than he strikes out, this visualization focuses on every plate appearance he had in the fall season that resulted in a walk. Each plate appearance demonstrates the location and pitch type, as well as the result of each pitch. These plots demonstrate high levels of plate discipline, with Minick swinging at pitches in the zone and taking pitches outside the zone. Plate discipline is an essential factor for a hitter to accumulate more walks than strikeouts, a skill set that Minick illustrated during the fall season.
+
+```{r}
+minick_data <- data %>%
+  filter(Batter == "Minick, Tyler") %>%
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%  
+  arrange(Date, PitchNo)
+
+walk_PAs_minick <- minick_data %>%
+  filter(KorBB == "Walk") %>%
+  distinct(GameID, Inning, Top.Bottom, PAofInning)
+
+minick_walk_pitches <- minick_data %>%
+  semi_join(walk_PAs_minick, by = c("GameID", "Inning", "Top.Bottom", "PAofInning"))
+
+minick_walk_pitches <- minick_walk_pitches %>%
+  mutate(
+    PA_label = paste0("Game ", GameID, 
+                      " Inning ", Inning, 
+                      " ", Top.Bottom, 
+                      " PA#", PAofInning),
+    PitchResultType = case_when(
+      PitchCall %in% c("StrikeCalled", "StrikeSwinging") ~ "Strike",
+      PitchCall == "FoulBall" ~ "Foul",
+      PitchCall %in% c("BallCalled", "BallinDirt", "BallIntentional") ~ "Ball",
+      TRUE ~ "Other"
+    )
+  )
+
+strike_zone <- data.frame(
+  x = c(-0.83, 0.83, 0.83, -0.83, -0.83),
+  y = c(1.5, 1.5, 3.5, 3.5, 1.5)
+)
+
+ggplot(minick_walk_pitches, aes(x = PlateLocSide, y = PlateLocHeight)) +
+  geom_path(data = strike_zone, aes(x = x, y = y), color = "black") +
+  geom_point(aes(color = TaggedPitchType, shape = PitchResultType), size = 3) +
+  geom_text(aes(label = PitchofPA), vjust = -1.2, size = 3) +
+  facet_wrap(~PA_label) +
+  scale_color_brewer(palette = "Set1") +
+  labs(
+    title = "Minick Walks, All Pitches",
+    x = "Horizontal Location (ft)",
+    y = "Vertical Location (ft)",
+    color = "Pitch Type",
+    shape = "Pitch Result"
+  ) +
+  coord_fixed() + 
+  theme_minimal() +
+  theme(strip.text = element_text(size = 8))
+```
+
+### **Cam Righi's Fall 2025 Athletic Goal: I will minimize strikeouts.**
+
+To analyze Righi's ability to minimize strikeouts, I decided to focus on setup pitches (the pitch right before the strikeout) and the putaway pitch (the pitch that decides the strikeout). For each of Righi's strikeouts from the fall season, I created strikeout visualizations featuring the location and pitch type for both setup and putaway pitches. Some strikeouts - including Strikeouts 1, 3, 8, and 15 - occurred because Righi was swinging at pitches outside the zone, while other strikeouts - like Strikeouts 2, 5, and 10 - featured quality pitch sequencing from the opposing pitcher. While Righi's 17 strikeouts demonstrate areas for improvement to continue minimizing his strikeouts in the spring season, namely working on plate discipline to avoid swinging at balls.
+
+```{r fig.width=5, fig.height=5, out.width="60%", fig.align="center"}
+righi_data <- data %>%
+  filter(Batter == "Righi, Camden") %>%
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  arrange(Date, PitchNo)
+
+righi_pitch_before_k <- righi_data %>%
+  mutate(
+    next_pitch_call = lead(KorBB),
+    putaway_pitch = lead(TaggedPitchType),
+    putaway_speed = lead(RelSpeed),
+    putaway_spin = lead(SpinRate),
+    putaway_plate_side = lead(PlateLocSide),
+    putaway_plate_height = lead(PlateLocHeight)
+  ) %>%
+  filter(next_pitch_call == "Strikeout") %>%
+  select(
+    Batter,
+    prev_pitch_type = TaggedPitchType,
+    prev_plate_side = PlateLocSide,
+    prev_plate_height = PlateLocHeight,
+    putaway_pitch,
+    putaway_speed,
+    putaway_spin,
+    putaway_plate_side,
+    putaway_plate_height
+  )
+
+righi_strikeouts_prepared <- righi_data %>%
+  filter(KorBB == "Strikeout") %>%
+  select(
+    Batter,
+    strike_pitch_type = TaggedPitchType,
+    strike_speed = RelSpeed,
+    strike_spin = SpinRate,
+    strike_call = PitchCall,
+    strike_plate_side = PlateLocSide,
+    strike_plate_height = PlateLocHeight
+  )
+
+combined_righi <- righi_pitch_before_k %>%
+  left_join(
+    righi_strikeouts_prepared,
+    by = c(
+      "Batter",
+      "putaway_pitch" = "strike_pitch_type",
+      "putaway_plate_side" = "strike_plate_side",
+      "putaway_plate_height" = "strike_plate_height"
+    )
+  )
+
+combined_clean_righi <- combined_righi %>%
+  filter(
+    !is.na(prev_pitch_type),
+    !is.na(prev_plate_side),
+    !is.na(prev_plate_height),
+    !is.na(putaway_pitch),
+    !is.na(putaway_plate_side),
+    !is.na(putaway_plate_height)
+  ) %>%
+  mutate(strike_id = row_number())
+
+setup_pitches_righi <- combined_clean_righi %>%
+  select(
+    strike_id,
+    PitchType = prev_pitch_type,
+    PlateSide = prev_plate_side,
+    PlateHeight = prev_plate_height
+  ) %>%
+  mutate(PitchStage = "Setup Pitch", seq_order = 1)
+
+putaway_pitches_righi <- combined_clean_righi %>%
+  select(
+    strike_id,
+    PitchType = putaway_pitch,
+    PlateSide = putaway_plate_side,
+    PlateHeight = putaway_plate_height
+  ) %>%
+  mutate(PitchStage = "Putaway Pitch", seq_order = 2)
+
+pitches_long_righi <- bind_rows(
+  setup_pitches_righi,
+  putaway_pitches_righi
+)
+
+pitch_types_righi <- levels(
+  factor(pitches_long_righi$PitchType)
+)
+
+colors_righi <- RColorBrewer::brewer.pal(
+  min(length(pitch_types_righi), 8),
+  "Set2"
+)
+
+names(colors_righi) <- pitch_types_righi
+
+unique_ids_righi <- unique(pitches_long_righi$strike_id)
+
+for (id in unique_ids_righi) {
+
+  p <- ggplot(
+    filter(pitches_long_righi, strike_id == id),
+    aes(
+      x = PlateSide,
+      y = PlateHeight,
+      color = PitchType,
+      shape = PitchStage
+    )
+  ) +
+    geom_point(size = 4, alpha = 0.9) +
+    geom_rect(
+      aes(
+        xmin = -0.83,
+        xmax = 0.83,
+        ymin = 1.5,
+        ymax = 3.5
+      ),
+      color = "black",
+      fill = NA,
+      linetype = "dashed"
+    ) +
+    scale_color_manual(values = colors_righi) +
+    scale_shape_manual(
+      values = c(
+        "Setup Pitch" = 16,
+        "Putaway Pitch" = 17
+      )
+    ) +
+    labs(
+      x = "Horizontal Location (ft)",
+      y = "Vertical Location (ft)",
+      title = paste("Righi Strikeout", id),
+      color = "Pitch Type",
+      shape = "Pitch Stage"
+    ) +
+    coord_fixed() +
+    theme_minimal(base_size = 16) +
+    theme(
+      legend.position = "bottom",
+      legend.title = element_text(size = 12, face = "bold"),
+      legend.text = element_text(size = 11),
+      legend.key.size = unit(1, "cm"),
+      plot.title = element_text(size = 16, face = "bold")
+    ) +
+    guides(
+      color = guide_legend(
+        ncol = 1,
+        byrow = TRUE,
+        override.aes = list(size = 5)
+      ),
+      shape = guide_legend(
+        ncol = 1,
+        byrow = TRUE,
+        override.aes = list(size = 5)
+      )
+    )
+
+  print(p)
+}
+```
+
+### Chase Taylor's Fall 2025 Athletic Goal: I will produce more hard contact.
+
+Taylor's goal of hard contact production relies on the understanding that a hard-hit ball must have an exit velocity of 92 mph or more. Based on this definition, I created a spray chart that highlights the location of Taylor's hard contact during the fall season. This chart demonstrates Taylor's propensity to drive hard ground balls up the middle, seen in the cluster of orange dots close to the pitcher's mound, and his tendency to hit hard line drives and flyballs to right-center field. Because Taylor is a left-handed batter, this means that he tends to pull the ball. A potential area of improvement for Taylor is to focus on producing hard contact to the opposite field. 
+
+```{r}
+taylor_data <- data[data$Batter == "Taylor, Chase", ]
+
+taylor_data <- taylor_data %>%
+  select(
+    ExitSpeed, Angle, Direction, Distance, MaxHeight, HangTime,
+    HitSpinRate, ContactPositionX, ContactPositionY, ContactPositionZ,
+    TaggedPitchType, AutoPitchType, PlayResult, PitchCall,
+    TaggedHitType, Balls, Strikes, PlateLocHeight, PlateLocSide,
+    ZoneSpeed, VertApprAngle, HorzApprAngle, BatterSide
+  )
+
+taylor_inplay_data <- taylor_data %>%
+  filter(PitchCall == "InPlay")
+
+taylor_inplay_data <- taylor_inplay_data %>%
+  mutate(
+    IsBarrel = if_else(
+      ExitSpeed >= 92 & Angle >= 10 & Angle <= 30,
+      1, 0
+    ),
+    IsHardHit = if_else(ExitSpeed >= 92, 1, 0)
+  )
+
+taylor_inplay_data <- taylor_inplay_data %>%
+  filter(!is.na(IsBarrel) & !is.na(IsHardHit))
+
+taylor_plot_data <- taylor_inplay_data %>%
+  filter(!is.na(Direction) & !is.na(Distance)) %>%
+  mutate(
+    x = Distance * sin(Direction * pi / 180),
+    y = Distance * cos(Direction * pi / 180),
+    SprayZone = case_when(
+      BatterSide == "Right" & Direction < -30 ~ "Pull",
+      BatterSide == "Right" & Direction > 30 ~ "Opposite",
+      BatterSide == "Right" &
+        Direction >= -30 & Direction <= 30 ~ "Center",
+      TRUE ~ "Unknown"
+    ),
+    BarrelStatus = if_else(IsBarrel == 1, "Barrel", "Non-Barrel")
+  )
+
+left_angle <- -45 * pi / 180
+right_angle <- 45 * pi / 180
+
+taylor_plot_data <- taylor_plot_data %>%
+  mutate(
+    HardHitStatus = if_else(
+      IsHardHit == 1,
+      "Hard-Hit", "Non-Hard-Hit"
+    )
+  )
+
+hardhit_plot <- geom_baseball(
+  league = "MLB",
+  display_range = "outfield"
+) +
+  geom_arc(
+    aes(
+      x0 = 0, y0 = 0, r = 400,
+      start = left_angle, end = right_angle
+    ),
+    color = "darkgreen",
+    linetype = "dotted",
+    linewidth = 0.8
+  ) +
+  geom_segment(
+    aes(
+      x = 0, y = 0,
+      xend = 400 * sin(left_angle),
+      yend = 400 * cos(left_angle)
+    ),
+    color = "white", size = 1
+  ) +
+  geom_segment(
+    aes(
+      x = 0, y = 0,
+      xend = 400 * sin(right_angle),
+      yend = 400 * cos(right_angle)
+    ),
+    color = "white", size = 1
+  ) +
+  geom_point(
+    data = taylor_plot_data,
+    aes(x = x, y = y, color = HardHitStatus),
+    size = 3, alpha = 0.9
+  ) +
+  scale_color_manual(
+    values = c(
+      "Hard-Hit" = "orange",
+      "Non-Hard-Hit" = "gray60"
+    )
+  ) +
+  ggtitle("Taylor Hard-Hit vs. Weak Contact") +
+  coord_fixed() +
+  theme_minimal(base_size = 14) +
+  labs(
+    color = "Contact Type",
+    x = "Horizontal Distance (ft)",
+    y = "Vertical Distance (ft)"
+  )
+
+hardhit_plot
+```
+Here, we see Taylor's exit velocity over the course of the fall season, which directly informs the amount of hard contact he produced. After an early stint with low exit velocities, Taylor evened out his hits toward the end of the fall semester with more consistent contact at higher velocities.
+```{r}
+taylor_inplay_data <- taylor_inplay_data %>%
+  mutate(Index = row_number())
+
+ggplot(taylor_inplay_data, aes(x = Index, y = ExitSpeed)) +
+  geom_line(alpha = 0.6, color = "gray60") +
+  geom_smooth(span = 0.2, color = "orange", se = FALSE, linewidth = 1.2) +
+  labs(
+    title = "Rolling Exit Velocity (Contact Quality Over Time)",
+    x = "Batted Ball Number",
+    y = "Exit Velocity (mph)"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+### **Gabriel Tirado's Fall 2025 Athletic Goal: My athletic goal for this semester is to prove that I am more than capable of catching at a high level by establishing relationships with my pitching staff, and to have my pitchers WANT to throw to me.**
+
+Tirado's goal is another where the content is relatively unspecific, providing me with the opportunity to think outside the box with my visualizations. One of the main reasons pitchers would want to throw to Tirado, who is a catcher, is if he successfully frames pitches to be called as strikes, especially in the shadow zone (one ball off the strike zone). As the summary table demonstrates, of the called pitches in the shadow zone, 63% were called balls and 37% were called strikes. Based on this individual factor, pitchers might be more inclined to pitch to Tirado if he improves his pitch framing in the shadow zone. His area of improvement for this skill, according to the visual, is pitches in the bottom of the zone; this skill is a specific goal for Tirado to continue working towards as the spring season approaches.
+
+```{r}
+tirado_fall_data <- data[data$Catcher == "Tirado, Gabriel", ]
+
+tirado_fall_data <- tirado_fall_data %>%
+  mutate(
+    ZoneCategory = case_when(
+      PlateLocSide >= strike_x_min &
+        PlateLocSide <= strike_x_max &
+        PlateLocHeight >= strike_y_min &
+        PlateLocHeight <= strike_y_max ~ "StrikeZone",
+      PlateLocSide >= (strike_x_min - shadow_offset) &
+        PlateLocSide <= (strike_x_max + shadow_offset) &
+        PlateLocHeight >= (strike_y_min - shadow_offset) &
+        PlateLocHeight <= (strike_y_max + shadow_offset) ~
+          "ShadowZone",
+      TRUE ~ "Outside"
+    )
+  )
+
+tirado_fall_strike_ball <- tirado_fall_data %>%
+  filter(PitchCall %in% c("BallCalled", "StrikeCalled"))
+
+tirado_fall_shadow <- tirado_fall_strike_ball %>%
+  filter(ZoneCategory == "ShadowZone")
+
+plot_strike_zone <- function(data, title_text) {
+  
+  ggplot(data, aes(PlateLocSide, PlateLocHeight, color = PitchCall)) +
+    
+    geom_rect(aes(xmin = strike_x_min - shadow_offset,
+                  xmax = strike_x_max + shadow_offset,
+                  ymin = strike_y_min - shadow_offset,
+                  ymax = strike_y_max + shadow_offset),
+              fill = NA, color = "gray70", linetype = "dashed", linewidth = 0.6) +
+    
+    geom_rect(aes(xmin = strike_x_min, xmax = strike_x_max,
+                  ymin = strike_y_min, ymax = strike_y_max),
+              fill = NA, color = "black", linewidth = 0.8) +
+    
+    
+        geom_point(alpha = 0.7, size = 1.6) +
+    
+    scale_color_manual(values = c(
+      "BallCalled" = "red",
+      "StrikeCalled" = "green"
+    )) +
+    
+    labs(
+      title = title_text,
+      x = "Horizontal Location (ft)",
+      y = "Vertical Location (ft)",
+      color = "Pitch Call"
+    ) +
+    
+    coord_fixed() +
+    theme_minimal(base_size = 10)
+}
+
+plot_strike_zone(
+  tirado_fall_shadow,
+  "Tirado Fall 2025 Shadow Zone Pitch Calls"
+)
+```
+
+```{r}
+shadow_zone_summary <- tirado_fall_data %>%
+  filter(ZoneCategory == "ShadowZone") %>%
+  group_by(PitchCall) %>%               
+  summarise(Count = n(),                
+            Percent = round(n()/nrow(.)*100, 1)) %>%  
+  arrange(desc(Count))                  
+
+kable(shadow_zone_summary,
+      caption = "Tirado Pitch Calls in the Shadow Zone (Fall 2025)",
+      col.names = c("Pitch Call", "Count", "Percent (%)"))
+```
+
+### **Nater Wachter's Fall 2025 Athletic Goal: I will earn the starting center field spot, as well as being more consistent with my approach and barrel control.**
+
+To address Wachter's goal of a consistent barrel approach, I created a spray chart that is wrapped by pitch location. This chart demonstrates the consistency in Wachter's barrel control because the hits in each facet are relatively grouped together. These groupings demonstrate that Wachter's approach, when given pitches in certain areas of the zone, translates to consistent batted ball production to certain areas of the field, meaning he is hitting the ball the same way for certain locations. 
+
+```{r fig.width=14, fig.height=10}
+wachter_data <- data[data$Batter == "Wachter, Nater", ]
+
+wachter_data <- wachter_data %>%
+  select(
+    ExitSpeed, Angle, Direction, Distance, MaxHeight, HangTime,
+    HitSpinRate, ContactPositionX, ContactPositionY, ContactPositionZ,
+    TaggedPitchType, AutoPitchType, PlayResult, PitchCall,
+    TaggedHitType, Balls, Strikes, PlateLocHeight, PlateLocSide,
+    ZoneSpeed, VertApprAngle, HorzApprAngle, BatterSide
+  )
+
+wachter_inplay_data <- wachter_data %>%
+  filter(PitchCall == "InPlay")
+
+wachter_inplay_data <- wachter_inplay_data %>%
+  mutate(
+    IsBarrel = if_else(
+      ExitSpeed >= 92 & Angle >= 10 & Angle <= 30,
+      1, 0
+    ),
+    IsHardHit = if_else(ExitSpeed >= 92, 1, 0)
+  )
+
+wachter_inplay_data <- wachter_inplay_data %>%
+  filter(!is.na(IsBarrel) & !is.na(IsHardHit))
+
+wachter_plot_data <- wachter_inplay_data %>%
+  filter(!is.na(Direction) & !is.na(Distance)) %>%
+  mutate(
+    x = Distance * sin(Direction * pi / 180),
+    y = Distance * cos(Direction * pi / 180),
+    SprayZone = case_when(
+      BatterSide == "Right" & Direction < -30 ~ "Pull",
+      BatterSide == "Right" & Direction > 30 ~ "Opposite",
+      BatterSide == "Right" &
+        Direction >= -30 & Direction <= 30 ~ "Center",
+      TRUE ~ "Unknown"
+    ),
+    BarrelStatus = if_else(
+      IsBarrel == 1,
+      "Barrel", "Non-Barrel"
+    )
+  )
+
+left_angle <- -45 * pi / 180
+right_angle <- 45 * pi / 180
+
+wachter_plot_data <- wachter_plot_data %>%
+  mutate(
+    ZoneLabel = case_when(
+      BatterSide == "Right" &
+        PlateLocHeight > 3.2 &
+        PlateLocSide < -0.4 ~ "Up & In",
+      BatterSide == "Right" &
+        PlateLocHeight > 3.2 &
+        PlateLocSide >= -0.4 &
+        PlateLocSide <= 0.4 ~ "Up & Middle",
+      BatterSide == "Right" &
+        PlateLocHeight > 3.2 &
+        PlateLocSide > 0.4 ~ "Up & Away",
+
+      BatterSide == "Right" &
+        PlateLocHeight > 2.4 &
+        PlateLocHeight <= 3.2 &
+        PlateLocSide < -0.4 ~ "Middle & In",
+      BatterSide == "Right" &
+        PlateLocHeight > 2.4 &
+        PlateLocHeight <= 3.2 &
+        PlateLocSide >= -0.4 &
+        PlateLocSide <= 0.4 ~ "Middle",
+      BatterSide == "Right" &
+        PlateLocHeight > 2.4 &
+        PlateLocHeight <= 3.2 &
+        PlateLocSide > 0.4 ~ "Middle & Away",
+
+      BatterSide == "Right" &
+        PlateLocHeight <= 2.4 &
+        PlateLocSide < -0.4 ~ "Low & In",
+      BatterSide == "Right" &
+        PlateLocHeight <= 2.4 &
+        PlateLocSide >= -0.4 &
+        PlateLocSide <= 0.4 ~ "Low & Middle",
+      BatterSide == "Right" &
+        PlateLocHeight <= 2.4 &
+        PlateLocSide > 0.4 ~ "Low & Away",
+
+      TRUE ~ "Other"
+    )
+  )
+
+field_plot <- geom_baseball(
+  league = "MLB",
+  display_range = "outfield"
+)
+
+zone_label_spray_plot <- field_plot +
+  geom_point(
+    data = wachter_plot_data %>%
+      filter(!is.na(ZoneLabel)),
+    aes(x = x, y = y, color = ZoneLabel),
+    size = 3, alpha = 0.9
+  ) +
+  scale_color_brewer(palette = "Set2") +
+  ggtitle("Nater Wachter \u2013 Spray Chart by Pitch Location") +
+  coord_fixed() +
+  theme_minimal(base_size = 14) +
+  labs(
+    color = "Pitch Location (RHH View)",
+    x = "Horizontal Distance (ft)",
+    y = "Vertical Distance (ft)"
+  ) +
+  facet_wrap(~ ZoneLabel, ncol = 3)
+
+zone_label_spray_plot
+```
+
+
+
+## Works Cited
+Bird, M. D., Swann, C., & Jackman, P. C. (2024). The what, why, and how of goal setting: A review of the goal-setting process in applied sport psychology practice. *Journal of Applied Sport Psychology*, *36*(1), 75–97. https://doi.org/10.1080/10413200.2023.2185699
+
+Chen, Z., Robbins, T., Gephardt, W., & Nestler, S. (2025). Reshaping baseball: The impact of analytics and technology. *Institute for Operations Research and the Management Sciences*. https://doi.org/10.1287/orms.2025.02.07. 
+
+Pifer, N. D. (2024). Pitch-level college baseball data captured by optical tracking technology. *Data in Brief*, *57*. https://doi.org/10.1016/j.dib.2024.111049.
